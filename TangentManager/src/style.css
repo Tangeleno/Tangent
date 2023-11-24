@@ -1,0 +1,99 @@
+#app[data-theme="light"],#app[data-theme="dark"] {
+    --nav-menu-hover-color: rgba(255, 255, 255, 0.1);
+    --nav-menu-active-border-color: #006fa1;
+    --seperator-border-color: #d0d0d0;
+    --nav-menu-bg-color: #f0f0f0;
+    --menu-bg-color: #f0f0f0;
+    --menu-item-hover-color:rgba(0,0,255,0.1);
+    --main-bg-color: #ffffff;
+    --nav-menu-font-color: #101010;
+    --list-item-hover-color: #006fa1;
+    --tree-line-color: #d0d0d0;
+    --font-color: #303030;
+    --character-selected-color: #0075c9;
+    --code-background-color:rgba(0,0,0,0.1);
+    --code-color: #703f17;
+    --canvas-bg-color:#cfcfcf
+}
+
+#app[data-theme="dark"] {
+    --nav-menu-hover-color: rgba(0, 0, 0, 0.1);
+    --nav-menu-active-border-color: #0199c7;
+    --seperator-border-color: gray;
+    --nav-menu-bg-color: #2f2f2f;
+    --menu-bg-color:#2f2f2f;
+    --menu-item-hover-color:rgba(0,0,255,0.1);
+    --main-bg-color: #0f0f0f;
+    --nav-menu-font-color: #efefef;
+    --list-item-hover-color: #0199c7;
+    --tree-line-color: #2f2f2f;
+    --font-color: #cfcfcf;
+    --character-selected-color: #0155a5;
+    --code-background-color:rgba(255,255,255,0.1);
+    --code-color: #dc762f;
+    --canvas-bg-color:#101010
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+.container {
+    background-color: var(--main-bg-color);
+    color: var(--font-color);
+    display: grid;
+    grid-template-rows: auto 10fr;
+    grid-template-areas: 
+            "nav"
+            "content";
+    height: 100vh;
+}
+.content {
+    /*overflow: hidden;*/
+}
+
+
+
+.markdown{
+    font-size: 1.25em;
+    line-height: 1.25em;
+    padding: 0 2em;
+    height: 100%;
+    overflow: auto;
+}
+
+.markdown code {
+    background-color: var(--code-background-color);
+    color: var(--code-color);
+}
+
+.markdown p{
+    padding: 0.25em 1em 0 1em;
+    margin: 0;
+}
+
+.markdown ol {
+    padding-bottom: 0.25em;
+    padding-left: 3.5em;
+}
+.markdown ul{
+    margin: 0;
+}
+.markdown ol>li>ol{
+    list-style: upper-roman;
+    padding-left: 2em;
+}
+
+.markdown h2{
+    padding-bottom: 1em;
+    border-bottom: 1px solid var(--seperator-border-color);
+}
+.markdown h3{
+    margin-bottom: 0;
+}

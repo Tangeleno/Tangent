@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Behavior Tree Editor</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="modulea" src="script.js" defer></script>
+  </head>
+  <body>
+    <nav>
+      <div class="logo"><img src="https://placehold.co/100x50"/></div>
+      <div class="menu-item" data-menu="file">
+        File Really Long
+        <div class="submenu">
+          <a href="#">New</a>
+          <a href="#">Open</a>
+          <a href="#">Save</a>
+        </div>
+      </div>
+      <div class="menu-item" data-menu="edit">
+        Edit
+        <div class="submenu">
+          <a href="#">Cut</a>
+          <a href="#">Copy</a>
+          <a href="#">Paste</a>
+        </div>
+      </div>
+      <!-- ... other menu items ... -->
+      <div class="menu-item theme-toggle">
+        <i class="fa-regular fa-lightbulb"></i>
+      </div>
+    </nav>
+
+    <section class="canvas-container">Canvas</section>
+    <aside class="editor">Editor</aside>
+    
+  </body>
+</html>
