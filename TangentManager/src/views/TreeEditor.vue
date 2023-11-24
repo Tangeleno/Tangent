@@ -317,12 +317,11 @@ onMounted(() => {
       "childrenIds": []
     },
     "node19": {
-      "type": "ActionNode",
+      "type": "ConditionNode",
       "id": "node19",
-      "name": "Action",
+      "name": "Condition",
       "parentId": "node10",
-      "actionName":"noop",
-      "paramKeys":'a,b,c',
+      "conditionName":"foob",
       "childrenIds": []
     }
   }

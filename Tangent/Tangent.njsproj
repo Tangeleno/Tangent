@@ -23,10 +23,6 @@
     <StartWebBrowser>false</StartWebBrowser>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Annotations\" />
-    <Folder Include="Annotations\macroquest\" />
-    <Folder Include="Annotations\macroquest\DataTypes\" />
-    <Folder Include="Annotations\macroquest\TLOs\" />
     <Folder Include="bin\" />
     <Folder Include="libs\" />
     <Folder Include="libs\behavior\" />

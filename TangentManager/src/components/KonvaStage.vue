@@ -470,6 +470,7 @@ const generateBezierPathForNode = (node: TreeNode) => {
 
     case NodeType.Failer:
     case NodeType.Succeeder:
+    case NodeType.Condition:
       [start, _] = ellipseStartEndPoints(parentNode);
       break;
   }
@@ -503,6 +504,7 @@ const generateBezierPathForNode = (node: TreeNode) => {
     case NodeType.Succeeder:
     case NodeType.Action:
     case NodeType.Wait:
+    case NodeType.Condition:
       [_, end] = ellipseStartEndPoints(node);
       break;
   }

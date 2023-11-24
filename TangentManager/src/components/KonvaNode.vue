@@ -151,6 +151,8 @@ const getFillColor = (nodeType) => {
       return '#FF0000';
     case NodeType.Succeeder:
       return '#00FF00';
+    case NodeType.Condition:
+      return '#FFAAFF';
     default:
       return '#FFFFFF';
   }
