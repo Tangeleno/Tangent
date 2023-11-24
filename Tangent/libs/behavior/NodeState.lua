@@ -17,3 +17,4 @@ local NodeState = {
     [3] = "Running",
     [4] = "Aborted"
 }
+return NodeState

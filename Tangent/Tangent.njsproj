@@ -31,7 +31,6 @@
     <Folder Include="libs\" />
     <Folder Include="libs\behavior\" />
     <Folder Include="libs\behavior\editor\" />
-    <Folder Include="libs\behavior\nodes\" />
     <Folder Include="libs\Helpers\" />
     <Folder Include="libs\utility\" />
     <Folder Include="mq\" />
@@ -102,6 +101,7 @@
     <Content Include="libs\behavior\NodeState.lua" />
     <Content Include="libs\behavior\nodes\action.lua" />
     <Content Include="libs\behavior\nodes\composite.lua" />
+    <Content Include="libs\behavior\nodes\condition.lua" />
     <Content Include="libs\behavior\nodes\decorator.lua" />
     <Content Include="libs\behavior\nodes\failer.lua" />
     <Content Include="libs\behavior\nodes\invert.lua" />
@@ -130,7 +130,6 @@
     <Content Include="libs\utility\ValueLookups.lua" />
     <Content Include="mq\Icons.lua" />
     <Content Include="mq\ImguiHelper.lua" />
-    <Content Include="README.md" />
     <Content Include="relay.lua" />
     <Content Include="UtilityDocumentation.md" />
   </ItemGroup>

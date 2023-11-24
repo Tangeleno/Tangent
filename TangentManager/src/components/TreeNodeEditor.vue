@@ -1,11 +1,12 @@
 ﻿<script lang="ts" setup>
-import { ref, watch,watchEffect  } from 'vue';
+import {computed, ref, watch, watchEffect} from 'vue';
 import {nodeStore} from "@/stores";
-import {NodeType,NodeDetails, TreeNode} from "@/types/TreeNode.ts";
+import {NodeType,NodeDetails, TreeNode,Actions,Conditions} from "@/types/TreeNode.ts";
 
 const selectedNodeCopy = ref<TreeNode|null>(null);
 const hasChanges = ref(false);
-
+const actionList = computed(()=>Object.values(Actions));
+const conditionList = computed(()=>Object.values(Conditions));
 watch(()=>nodeStore.selectedNodeId,(newNodeId)=>{
   if (newNodeId){
     const node = nodeStore.selectedNode;
@@ -21,18 +22,23 @@ watchEffect(() => {
     hasChanges.value = JSON.stringify(selectedNodeCopy.value) !== JSON.stringify(original);
   }
 });
-const getNodeInputs = function(){
-  console.log(NodeType[selectedNodeCopy.value.type].inputs)
-  return NodeType[selectedNodeCopy.value.type].inputs;
-}
 const saveChanges = function(){
-  nodeStore.selectedNode.name = selectedNodeCopy.value.name;
   nodeStore.selectedNode.type = selectedNodeCopy.value.type;
+  for (const input of NodeDetails[selectedNodeCopy.value.type].inputs) {
+    console.log(input.name)
+    nodeStore.selectedNode[input.name] =selectedNodeCopy.value[input.name] 
+  }
 }
 
 </script>
 
 <template>
+  <datalist id="action-list">
+    <option v-for="option in actionList" :value="option"></option>
+  </datalist>
+  <datalist id="condition-list">
+    <option v-for="option in conditionList" :value="option"></option>
+  </datalist>
   <template v-if="selectedNodeCopy">
     <label>Node Type
       <select id="typeSelector" v-model="selectedNodeCopy.type" name="type">
@@ -40,19 +46,21 @@ const saveChanges = function(){
       </select>
     </label>
     <div v-for="input in NodeDetails[selectedNodeCopy.type].inputs" :key="input.name">
-      <label>{{ input.name }}</label>
+      <span class="label">
+        <label>{{ input.display }} </label>
+        <fa-icon icon="circle-info" :title="input.description"></fa-icon>
+      </span>
+      
       <template v-if="input.type === 'string' || input.type === 'number'">
         <input v-model="selectedNodeCopy[input.name]" type="text" :placeholder="input.description">
       </template>
-
+      
       <template v-if="input.type === 'string[]'">
         <textarea v-model="selectedNodeCopy[input.name]" :placeholder="input.description"></textarea>
       </template>
 
-      <template v-if="input.type === 'condition'">
-        <select v-model="selectedNodeCopy[input.name]">
-          <option v-for="condition in conditionOptions" :value="condition">{{ condition }}</option>
-        </select>
+      <template v-if="input.type === 'condition' || input.type === 'action'">
+        <input v-model="selectedNodeCopy[input.name]" :list="input.type + '-list'"/>
       </template>
     </div>
     <button :disabled="!hasChanges" @click="saveChanges">Apply Changes</button>
@@ -61,10 +69,12 @@ const saveChanges = function(){
 
 <style scoped>
 input, select {
-}
-label{
   display: flex;
   flex-direction: column;
+  font-size: 1.25em;
+}
+label {
+  padding-right: 1em;
   font-size: 1.25em;
 }
 .editor select {

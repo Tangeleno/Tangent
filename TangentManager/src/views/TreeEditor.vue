@@ -204,6 +204,7 @@ onMounted(() => {
       "id": "node4",
       "name": "Retry",
       "parentId": "node1",
+      "repeatCount":7,
       "childrenIds": ["node15"]
     },
     "node5": {
@@ -211,6 +212,7 @@ onMounted(() => {
       "id": "node5",
       "name": "Repeat",
       "parentId": "node1",
+      "repeatCount":10,
       "childrenIds": ["node16"]
     },
     "node6": {
@@ -218,6 +220,8 @@ onMounted(() => {
       "id": "node6",
       "name": "Wait",
       "parentId": "node2",
+      "time":5,
+      "condition":null,
       "childrenIds": []
     },
     "node7": {
@@ -232,6 +236,8 @@ onMounted(() => {
       "id": "node8",
       "name": "Action",
       "parentId": "node2",
+      "actionName":"cast",
+      "paramKeys":'12',
       "childrenIds": []
     },
     "node10": {
@@ -239,6 +245,7 @@ onMounted(() => {
       "id": "node10",
       "name": "Loop",
       "parentId": "rootNode",
+      "loopCount":5,
       "childrenIds": ["node19"]
     },
     "node11": {
@@ -260,6 +267,8 @@ onMounted(() => {
       "id": "node13",
       "name": "Action",
       "parentId": "rootNode",
+      "actionName":"cast",
+      "paramKeys":'1',
       "childrenIds": []
     },
     "node14": {
@@ -267,6 +276,8 @@ onMounted(() => {
       "id": "node14",
       "name": "Action",
       "parentId": "node3",
+      "actionName":"target",
+      "paramKeys":['mt'],
       "childrenIds": []
     },
     "node15": {
@@ -274,6 +285,8 @@ onMounted(() => {
       "id": "node15",
       "name": "Action",
       "parentId": "node4",
+      "actionName":"stand",
+      "paramKeys":[],
       "childrenIds": []
     },
     "node16": {
@@ -281,6 +294,8 @@ onMounted(() => {
       "id": "node16",
       "name": "Action",
       "parentId": "node5",
+      "actionName":"sit",
+      "paramKeys":'',
       "childrenIds": []
     },
     "node17": {
@@ -288,6 +303,8 @@ onMounted(() => {
       "id": "node17",
       "name": "Action",
       "parentId": "node7",
+      "actionName":"tack",
+      "paramKeys":'x,y,e',
       "childrenIds": []
     },
     "node18": {
@@ -295,6 +312,8 @@ onMounted(() => {
       "id": "node18",
       "name": "Action",
       "parentId": "node7",
+      "actionName":"attack",
+      "paramKeys":'a,z,e',
       "childrenIds": []
     },
     "node19": {
@@ -302,6 +321,8 @@ onMounted(() => {
       "id": "node19",
       "name": "Action",
       "parentId": "node10",
+      "actionName":"noop",
+      "paramKeys":'a,b,c',
       "childrenIds": []
     }
   }

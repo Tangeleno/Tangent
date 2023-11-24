@@ -3,12 +3,13 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { createPinia } from 'pinia'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faFloppyDisk } from '@fortawesome/free-solid-svg-icons'
+import { faFloppyDisk,faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import './style.css'
 import App from './App.vue'
 import VueKonva from 'vue-konva';
 
 library.add(faFloppyDisk)
+library.add(faCircleInfo)
 
 createApp(App)
     .use(createRouter({

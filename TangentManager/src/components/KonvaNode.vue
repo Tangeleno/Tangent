@@ -81,7 +81,7 @@
               :strokeWidth="2"
               :x="nodeWidth / 2"
               :y="nodeHeight / 2" />
-    <v-ellipse v-if="node.type === NodeType.Succeeder"
+    <v-ellipse v-if="node.type === NodeType.Succeeder || node.type === NodeType.Condition"
               :fill="getFillColor(node.type)"
               :radius="{x: nodeWidth/2, y: nodeHeight/2}"
               :stroke="selected ? 'yellow' : 'black'"

@@ -120,13 +120,23 @@ The `ActionNode` is a specific node type in a Behavior Tree system. It represent
 
 ## WaitNode
 ### Description
-The `WaitNode` waits for a specified amount of time or until a condition is met.
+The `WaitNode` waits for a specified amount of time.
 ### Constructor Parameters
 - `name` (string): Name of the Wait node.
 - `time` (number): Time to wait in seconds.
-- `condition` (function): A function that returns a boolean. If true, the node will succeed before the time has elapsed.
 ### Properties
 - `NodeType`: String representing the type of the node, set to "WaitNode".
+### Inheritance
+- Inherits from [Node](#Node) class.
+
+## ConditionNode
+### Description
+The `ConditionNode` checks the specified condition, returning successfully if the condition is true, else failure
+### Constructor Parameters
+- `name` (string): Name of the Condition node.
+- `condition` (function): A function that returns a boolean. If true, the node will succeed before the time has elapsed.
+### Properties
+- `NodeType`: String representing the type of the node, set to "ConditionNode".
 ### Inheritance
 - Inherits from [Node](#Node) class.
 
