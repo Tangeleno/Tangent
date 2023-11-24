@@ -3,10 +3,11 @@
 </script>
 
 <template>
-  <h1>Welcome to Tangbot!</h1>
-  <markdown-renderer src="/markdown/intro.md"/>
+  <div class="container"><markdown-renderer src="/markdown/intro.md"/></div>
 </template>
 
 <style scoped>
-
+ div.container {
+   padding-top: 1rem;
+ }
 </style>
