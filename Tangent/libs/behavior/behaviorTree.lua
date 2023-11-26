@@ -60,7 +60,8 @@
 }
 
 ]]
-local cjson = require "cjson"
+local mq = require "libs.Helpers.MacroQuestHelpers"
+local rapidjson = require "rapidjson"
 local Nodes = require "libs.behavior.behavior" -- Adjust the path to your module
 local NodeState = require "libs.behavior.NodeState"
 
@@ -71,7 +72,6 @@ local function buildNode(jsonNode)
     local name = jsonNode.name
     ---@type Node
     local node
-
     if nodeType == "SelectNode" then
         node = Nodes.CompositeNodes.SelectNode.new(name)
     elseif nodeType == "SequenceNode" then
@@ -87,7 +87,7 @@ local function buildNode(jsonNode)
     elseif nodeType == "ActionNode" then
         node = Nodes.ActionNode.new(name, jsonNode.actionName, jsonNode.paramKeys)
     elseif nodeType == "WaitNode" then
-        node = Nodes.WaitNode.new(name, jsonNode.time, jsonNode.conditionKey)
+        node = Nodes.WaitNode.new(name, jsonNode.time)
     elseif nodeType == "RandomSelector" then
         node = Nodes.CompositeNodes.RandomSelector.new(name)
     elseif nodeType == "FailerNode" then
@@ -95,7 +95,9 @@ local function buildNode(jsonNode)
     elseif nodeType == "SucceederNode" then
         node = Nodes.SucceederNode.new(name)
     elseif nodeType == "LoopNode" then
-        node = Nodes.DecoratorNodes.LoopNode.new(name, jsonNode.loopCount, jsonNode.conditionKey)
+        node = Nodes.DecoratorNodes.LoopNode.new(name, jsonNode.loopCount, jsonNode.conditionName)
+    elseif nodeType == "ConditionNode" then
+        node = Nodes.ConditionNode.new(name, jsonNode.conditionName, jsonNode.paramKeys)
     else
         error("Unknown node type: " .. nodeType)
     end
@@ -128,7 +130,7 @@ local function findRunningNode(node)
     return nil
 end
 
----@type BehaviorTree
+---@class BehaviorTree
 local BehaviorTree = {}
 
 ---@param jsonString string
@@ -137,25 +139,29 @@ local BehaviorTree = {}
 function BehaviorTree.new(jsonString, blackboard)
     ---@class BehaviorTree
     local self = {}
-    local rootNode = buildNode(cjson.decode(jsonString))
+    local rootNode = buildNode(rapidjson.decode(jsonString))
     local currentRunningNode = nil
 
     function self.Tick()
+        local state = nil
+        mq.Write.Debug("Ticking the tree with blackboard %s",rapidjson.encode(blackboard))
         if currentRunningNode then
             -- Resume the running node
-            local state = currentRunningNode.Tick(blackboard)
+            state = currentRunningNode.Tick(blackboard)
             if state ~= NodeState.Running then
                 -- If the node is no longer running, reset it
                 currentRunningNode = nil
             end
         else
+            
             -- Start the tree from the root
-            local state = rootNode.Tick(blackboard)
+            state = rootNode.Tick(blackboard)
             if state == NodeState.Running then
                 -- Find the running node to resume next tick
                 currentRunningNode = findRunningNode(rootNode)
             end
         end
+        return state
     end
 
     return self

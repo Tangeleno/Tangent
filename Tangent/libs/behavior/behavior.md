@@ -135,6 +135,7 @@ The `ConditionNode` checks the specified condition, returning successfully if th
 ### Constructor Parameters
 - `name` (string): Name of the Condition node.
 - `condition` (function): A function that returns a boolean. If true, the node will succeed before the time has elapsed.
+- `paramKeys` (string[]): Keys used to extract the parameters from the blackboard.
 ### Properties
 - `NodeType`: String representing the type of the node, set to "ConditionNode".
 ### Inheritance
@@ -182,3 +183,16 @@ The `LoopNode` executes its child node a specified number of times.
 - `CurrentLoop`: Current iteration of the loop.
 ### Inheritance
 - Inherits from [DecoratorNode](#DecoratorNode) class.
+
+
+## Running
+### LuaRocks Libraries
+make sure your LUA_INCDIR and LUA_LIBDIR are set to your vcpkg installed static library like so
+`LUA_INCDIR = "\macroquest\contrib\vcpkg\installed\x64-windows-static\include\luajit",`
+`LUA_LIBDIR = "\macroquest\contrib\vcpkg\installed\x64-windows-static\lib",`
+- open x64 Native Tools command Prompt for VS2022
+- cd into your macroquest executable folder and run the following commands
+- "luarocks.exe" install --tree "\modules\2.1.1697887905\luarocks" "lua-messagepack"
+- "luarocks.exe" install --tree "\modules\2.1.1697887905\luarocks" "redis-lua"
+- "luarocks.exe" install --tree "\modules\2.1.1697887905\luarocks" "luasocket"
+- "luarocks.exe" install --tree "\modules\2.1.1697887905\luarocks" "rapidjson"

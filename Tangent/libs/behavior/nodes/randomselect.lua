@@ -1,7 +1,7 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local SelectNode = require "libs.behavior.nodes.select"
----@type RandomSelector
+---@class RandomSelector
 local RandomSelector = {}
 ---@param name string @Name of the RandomSelector node.
 function RandomSelector.new(name)
@@ -9,6 +9,7 @@ function RandomSelector.new(name)
     local self = SelectNode.new(name)
     self.NodeType = "RandomSelector"
 
+    mq.Write.Trace("Creating %s: %s", self.NodeType, self.Name)
     function self._OnInitialize(blackboard)
         -- Randomly shuffle the children
         local shuffled = {}

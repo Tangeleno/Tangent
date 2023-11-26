@@ -1,4 +1,0 @@
----@class AlertListType
-__AlertListType = {
-    
-}

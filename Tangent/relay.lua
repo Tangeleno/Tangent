@@ -1,9 +1,10 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 require "libs.Helpers.StringFunctions"
 local socket = require('socket')
-local cjson = require('cjson')
+-- local cjson = require('cjson')
 local msgpack = require('MessagePack')
 local redis = require('redis')
+local rapidjson = require 'rapidjson'
 
 local commands = {
     STOP_COMMAND = "/stoprelay",
@@ -75,7 +76,7 @@ local function UpdateCharacter(client, me, target)
         combatState = mq.CombatStates[me.CombatState()],
         class = mq.Classes[me.Class.ShortName()],
         casting = me.Casting.ID(),
-        castingTargetId = me.CastTarget(),
+        -- castingTargetId = me.CastTarget(),
         castingETA = me.CastTimeLeft(),
         autoAttacking = me.Combat(),
         autoFiring = me.AutoFire(),
@@ -140,7 +141,7 @@ local function logError(message, err)
     if type(err) == "string" then
         mq.Write.Error(message, err)
     elseif type(err) == "table" then
-        local errJson = cjson.encode(err)
+        local errJson = rapidjson.encode(err)
         mq.Write.Error(message, errJson)
     else
         mq.Write.Error(message, "")

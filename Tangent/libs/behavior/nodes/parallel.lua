@@ -2,7 +2,7 @@ local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local CompositeNode = require "libs.behavior.nodes.composite"
 
----@type ParallelNode
+---@class ParallelNode
 local ParallelNode = {}
 ---@param name string @Name of the Parallel node
 ---@param percentage number @Percentage of nodes that need to have succeeded for this node to succeed
@@ -16,6 +16,8 @@ function ParallelNode.new(name, percentage)
     local activeNodes = {}
     local successNodes = 0
     local totalNodes = 0
+    mq.Write.Trace("Creating %s: %s, percentage: %f", self.NodeType, self.Name, percentage)
+
     function self._OnInitialize(blackboard)
         activeNodes = {}
         for _, child in ipairs(self.Children) do
@@ -50,13 +52,14 @@ function ParallelNode.new(name, percentage)
             return NodeState.Running
         end
         if successNodes / totalNodes > percentage then
-            mq.Write.Debug("ParallelNode succeeded with success rate: %f", successNodes / totalNodes)
+            mq.Write.Trace("ParallelNode succeeded with success rate: %f", successNodes / totalNodes)
             return NodeState.Success
         end
-        mq.Write.Debug("ParallelNode failed with success rate: %f", successNodes / totalNodes)
+        mq.Write.Trace("ParallelNode failed with success rate: %f", successNodes / totalNodes)
         return NodeState.Failure
     end
 
     return self
 end
+
 return ParallelNode

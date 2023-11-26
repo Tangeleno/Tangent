@@ -1,7 +1,8 @@
+local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local DecoratorNode = require "libs.behavior.nodes.decorator"
 local Conditions = require "libs.behavior.conditions"
----@type LoopNode
+---@class LoopNode
 local LoopNode = {}
 ---@param name string @Name of the Loop node.
 ---@param loopCount number @Number of times to execute the child node.
@@ -14,21 +15,25 @@ function LoopNode.new(name, loopCount, conditionKey)
     self.CurrentLoop = 0
     self.ConditionKey = conditionKey
     local conditionFunc = Conditions[conditionKey]
+    mq.Write.Trace("Creating %s: %s, with loop count :%d", self.NodeType, self.Name, self.LoopCount)
     function self._OnInitialize(blackboard)
         self.CurrentLoop = 0
     end
 
     function self._Update(blackboard)
         if conditionFunc and not conditionFunc(blackboard) then
+            mq.Write.Trace("%s: %s condition failed, terminating loop early", self.NodeType, self.Name)
             return NodeState.Failure
         end
 
         local status = self.Child.Tick(blackboard)
         if status == NodeState.Success then
             self.CurrentLoop = self.CurrentLoop + 1
+            mq.Write.Trace("%s %s iteration %d/%d completed", self.NodeType, self.Name, self.CurrentLoop, self.LoopCount)
             if self.CurrentLoop < self.LoopCount then
                 return NodeState.Running
             else
+                mq.Write.Trace("%s %s completed all iterations successfully", self.NodeType, self.Name)
                 return NodeState.Success
             end
         end
@@ -37,4 +42,5 @@ function LoopNode.new(name, loopCount, conditionKey)
 
     return self
 end
+
 return LoopNode

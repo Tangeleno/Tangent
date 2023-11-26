@@ -11,6 +11,7 @@ local ActionNode = require "libs.behavior.nodes.action"
 local SucceederNode = require "libs.behavior.nodes.succeeder"
 local FailerNode = require "libs.behavior.nodes.failer"
 local WaitNode = require "libs.behavior.nodes.wait"
+local ConditionNode = require "libs.behavior.nodes.condition"
 return {
     Node = Node,
     CompositeNodes = {
@@ -26,6 +27,7 @@ return {
         LoopNode = LoopNode
     },
     ActionNode = ActionNode,
+    ConditionNode = ConditionNode,
     SucceederNode = SucceederNode,
     FailerNode = FailerNode,
     WaitNode = WaitNode

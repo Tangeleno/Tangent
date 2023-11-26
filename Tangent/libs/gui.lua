@@ -1,5 +1,4 @@
----@type mq
-local mq = MQ or require('mq')
+local mq = require "libs.Helpers.MacroQuestHelpers"
 local gui = {
     Name = "Gui",
     Title = "Gui",

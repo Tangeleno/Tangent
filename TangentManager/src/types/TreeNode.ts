@@ -4,14 +4,20 @@
     name: string;
     x: number;
     y: number;
-    parentId?: string | null; // ID of the parent node
-    childrenIds?: string[]; // Array of IDs representing the children in order
+    parentId: string | null; // ID of the parent node
+    childrenIds: string[]; // Array of IDs representing the children in order
+    [key: string]: any;
 };
 
 type NodeInput = {
     type: string;
     required: boolean;
     description: string;
+    name: string,
+    default:any,
+    display: string,
+    min: number,
+    max: number,
 };
 
 
@@ -154,13 +160,20 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
         inputs: [
             {name: 'name', display:'Name',type: 'string', required: true, description: 'Name of the node.'},
             {
-                name: 'condition',
+                name: 'conditionName',
                 display: 'Condition',
                 required: false,
                 type: 'condition',
                 default:'false',
                 description: 'Name of a condition.'
             },
+            {
+                name: 'paramKeys',
+                required: false,
+                display: 'Parameters',
+                type: 'string',
+                description: 'Keys used to extract the parameters from the blackboard.'
+            }
         ],
         canHaveChildren: false,
         isDecorator: false

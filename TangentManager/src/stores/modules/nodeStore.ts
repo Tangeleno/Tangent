@@ -1,35 +1,39 @@
-import {defineStore} from 'pinia';
-import {NodeDetails, TreeNode} from "@/types/TreeNode.ts";
-import {nodeStore} from "@/stores";
-import {hierarchy, tree} from 'd3-hierarchy';
-import {watch} from 'vue';
+import { defineStore } from 'pinia';
+import { NodeDetails, TreeNode } from "@/types/TreeNode.ts";
+import { nodeStore } from "@/stores";
+import { hierarchy, tree } from 'd3-hierarchy';
+import { watch } from 'vue';
 
 export const useNodeStore = defineStore({
     id: 'nodeStore',
     state: () => ({
         nodes: {} as Record<string, TreeNode>,
-        selectedNodeId: null,
+        selectedNodeId: null as string | null,
         nodeHeight: 100,
         nodeWidth: 150,
         horizontalNodeSpacing: 150,
-        verticalNodeSpacing: -40
+        verticalNodeSpacing: -40,
+        nextNodeId: 0
     }),
     getters: {
         selectedNode(state) {
+            if (state.selectedNodeId == null) {
+                return null;
+            }
             return state.nodes[state.selectedNodeId]
         }
     },
     actions: {
-        selectNode(nodeId) {
-            if (this.selectedNodeId == nodeId){
+        selectNode(nodeId: string) {
+            if (this.selectedNodeId == nodeId) {
                 this.selectedNodeId = null;
             } else {
-                this.selectedNodeId = nodeId;    
+                this.selectedNodeId = nodeId;
             }
-            
+
         },
-        updateNode(nodeIdToUpdate:string,node:TreeNode) {
-          let nodeToUpdate = this.nodes[nodeIdToUpdate]
+        updateNode(nodeIdToUpdate: string, node: TreeNode) {
+            let nodeToUpdate = this.nodes[nodeIdToUpdate]
             for (const childId of nodeToUpdate.childrenIds) {
                 this.nodes[childId].parentId = null
             }
@@ -55,11 +59,44 @@ export const useNodeStore = defineStore({
                 this.applyTreeLayout();
             });
         },
-        loadTree(jsonString) {
-            const newNode = JSON.parse(jsonString) as Record<string, TreeNode>;
-            if (!this.validateTree(newNode))
+        loadTree(jsonString: string) {
+            //loadtree reads in the json that the lua code needs. we need to flatten it out and provide ids if they don't exist
+            let nodes = {} as Record<string, TreeNode>
+
+            function flatten(node: any, parentId: string | null, store: any) {
+                //convert the current node
+                let currentNode = {} as TreeNode
+                currentNode.id = node.id || `Node-${store.nextNodeId++}`;
+
+                //add the current node
+                nodes[currentNode.id] = currentNode
+                currentNode.name = node.name;
+                currentNode.type = node.type;
+                currentNode.childrenIds = [];
+                currentNode.parentId = null;
+                for (const inputsKey of NodeDetails[currentNode.type].inputs) {
+                    currentNode[inputsKey.name] = node[inputsKey.name]
+                }
+                if (parentId) {
+                    currentNode.parentId = parentId
+                    if (nodes[parentId]) {
+                        nodes[parentId].childrenIds.push(currentNode.id)
+                    }
+                }
+                if (node.children) {
+                    for (const child of node.children) {
+                        flatten(child, currentNode.id, store)
+                    }
+                }
+            }
+
+            //convert the string to an object
+            const nestedTree = JSON.parse(jsonString);
+
+            flatten(nestedTree, null, this)
+            if (!this.validateTree(nodes))
                 return false;
-            this.nodes = newNode
+            this.nodes = nodes
             this.applyTreeLayout();
             return true;
         },
@@ -99,14 +136,14 @@ export const useNodeStore = defineStore({
         validateTree(newNode: Record<string, TreeNode>) {
             return true
         },
-        isRootNode(nodeId) {
+        isRootNode(nodeId:string) {
             return !(this.nodes[nodeId].parentId)
         },
-        canPlaceNode(possibleParentNodeId, possibleChildNodeId) {
+        canPlaceNode(possibleParentNodeId:string, possibleChildNodeId:string) {
             let possibleParent = this.nodes[possibleParentNodeId];
 
             // Helper function to traverse the hierarchy upwards.
-            const hasAncestor = (node, ancestorId) => {
+            const hasAncestor = (node:TreeNode, ancestorId:string) => {
                 while (node && node.parentId) {
                     if (node.parentId === ancestorId) {
                         return true;
@@ -116,11 +153,11 @@ export const useNodeStore = defineStore({
                 return false;
             };
 
-            let result = {canPlace: false, shouldConfirm: false, message: "an unknown error has occured"};
-            
+            let result = { canPlace: false, shouldConfirm: false, message: "an unknown error has occured" };
+
             // Check if the possibleParent has the possibleChild as an ancestor.
             const loopWouldForm = hasAncestor(possibleParent, possibleChildNodeId);
-            
+
             if (loopWouldForm) {
                 result.message = "Unable to place node, a loop would be formed";
                 return result;
@@ -140,8 +177,8 @@ export const useNodeStore = defineStore({
             //all our checks passed, return success I guess?
             return result;
         },
-        deleteChildren(node){
-            if (node == undefined)
+        deleteChildren(node:TreeNode) {
+            if (node == undefined || !node.childrenIds)
                 return;
             for (const childId of node.childrenIds) {
                 this.deleteChildren(this.nodes[childId])

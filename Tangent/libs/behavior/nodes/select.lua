@@ -1,7 +1,7 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local CompositeNode = require "libs.behavior.nodes.composite"
----@type SelectNode
+---@class SelectNode
 local SelectNode = {}
 ---@param name string @Name of the Select node
 ---@return SelectNode @The created SelectNode instance
@@ -10,7 +10,7 @@ function SelectNode.new(name)
     local self = CompositeNode.new(name)
     self.NodeType = "SelectNode"
     self.CurrentChildIndex = 1
-
+    mq.Write.Trace("Creating %s: %s", self.NodeType, self.Name)
     function self._OnInitialize(blackboard)
         self.CurrentChildIndex = 1
     end

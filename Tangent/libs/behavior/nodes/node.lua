@@ -1,6 +1,6 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
----@type Node
+---@class Node
 local Node = {
     States = NodeState
 }
@@ -42,7 +42,7 @@ function Node.new(name)
             mq.Write.Trace("Initializing Node %s %s", self.NodeType, self.Name)
             self._OnInitialize(blackboard)
         end
-        self.State = self._Update()
+        self.State = self._Update(blackboard)
         mq.Write.Trace("%s %s returned the status %s", self.NodeType, self.Name, NodeState[self.State])
         if self.State ~= NodeState.Running then
             mq.Write.Trace("Terminating Node %s %s", self.NodeType, self.Name)

@@ -2,14 +2,14 @@ local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local CompositeNode = require "libs.behavior.nodes.composite"
 
----@type SequenceNode
+---@class SequenceNode
 local SequenceNode = {}
 function SequenceNode.new(name)
     ---@class SequenceNode:CompositeNode
     local self = CompositeNode.new(name)
     self.NodeType = "SequenceNode"
     self.CurrentChildIndex = 1
-
+    mq.Write.Trace("Creating %s: %s", self.NodeType, self.Name)
     function self._OnInitialize(blackboard)
         self.CurrentChildIndex = 1
     end

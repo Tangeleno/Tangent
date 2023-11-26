@@ -11,15 +11,15 @@ import ConfirmationDialog from "@/components/ConfirmationDialog.vue";
 const containerRef = ref<HTMLDivElement | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
 const confirmDialogRef = ref<ConfirmationDialog | null>(null);
-const konvaStageRef = ref<KonvaStage|null>(null)
+const konvaStageRef = ref<KonvaStage | null>(null)
 const message = ref("");
 
-const currentAction = ref<string|null>(null);
+const currentAction = ref<string | null>(null);
 
 let intersectingNodeIdCache = null;
 let draggedNodeIdCache = null;
 
-function placeNode(intersectingNodeId, draggedNodeId){
+function placeNode(intersectingNodeId, draggedNodeId) {
   nodeStore.placeNode(intersectingNodeId, draggedNodeId)
   konvaStageRef.value.redrawStage()
 }
@@ -38,7 +38,7 @@ watch(currentAction, (newValue) => {
   }
 });
 
-const handleNodeIntersection = ({ draggedNodeId, intersectingNodeId }) => {
+const handleNodeIntersection = ({draggedNodeId, intersectingNodeId}) => {
   let canPlaceResults = nodeStore.canPlaceNode(intersectingNodeId, draggedNodeId);
   if (!canPlaceResults.canPlace)
     return;
@@ -60,7 +60,7 @@ function handleFileChange(event) {
     const reader = new FileReader();
     reader.onload = function () {
       const content = reader.result;
-      nodeStore.loadTree(content.toString());
+      nodeStore.loadTree(content);
     }
     reader.readAsText(file);
   }
@@ -71,262 +71,150 @@ function loadJsonClicked() {
 }
 
 onMounted(() => {
-  const nodeData = {
-    node1: {
-      type: "SequenceNode",
-      id: "node1",
-      name: "Node A",
-      parentId: null,
-      childrenIds: ["node2", "node6", "node7"]
-    },
-    node2: {
-      type: "SelectNode",
-      id: "node2",
-      name: "attack",
-      parentId: "node1",
-      childrenIds: ["node14", "node4", "node5"]
-    },
-    node14: {
-      type: "InvertNode",
-      id: "node14",
-      name: "SpitInverter",
-      parentId: "node2",
-      childrenIds: ["node3"]
-    },
-    node3: {
-      type: "ActionNode",
-      id: "node3",
-      name: "Spit",
-      parentId: "node14",
-      childrenIds: []
-    },
-    node4: {
-      type: "ActionNode",
-      id: "node4",
-      name: "Kick",
-      parentId: "node2",
-      childrenIds: []
-    },
-    node5: {
-      type: "ActionNode",
-      id: "node5",
-      name: "Punch",
-      parentId: "node2",
-      childrenIds: []
-    },
-    node6: {
-      type: "ActionNode",
-      id: "node6",
-      name: "bite",
-      parentId: "node1",
-      childrenIds: []
-    },
-    node7: {
-      type: "SequenceNode",
-      id: "node7",
-      name: "defend",
-      parentId: "node1",
-      childrenIds: ["node8", "node9", "node10"]
-    },
-    node8: {
-      type: "ActionNode",
-      id: "node8",
-      name: "Parry",
-      parentId: "node7",
-      childrenIds: []
-    },
-    node9: {
-      type: "ActionNode",
-      id: "node9",
-      name: "Riposte",
-      parentId: "node7",
-      childrenIds: []
-    },
-    node10: {
-      type: "SequenceNode",
-      id: "node10",
-      name: "Shield",
-      parentId: "node7",
-      childrenIds: ["node12", "node13", "node11"]
-    }, node12: {
-      type: "ActionNode",
-      id: "node12",
-      name: "Hold Up Shield",
-      parentId: "node10",
-      childrenIds: []
-    },
-    node11: {
-      type: "ActionNode",
-      id: "node11",
-      name: "Grab Shield",
-      parentId: "node10",
-      childrenIds: []
-    },
-
-    node13: {
-      type: "ActionNode",
-      id: "node13",
-      name: "Deflect Attack",
-      parentId: "node10",
-      childrenIds: []
-    }
-  }
-  const simpleNode = {
-    "rootNode": {
-      "type": "SelectNode",
-      "id": "rootNode",
-      "name": "Select",
-      "childrenIds": ["node1", "node2", "node10", "node11", "node12", "node13"]
-    },
-    "node1": {
-      "type": "SequenceNode",
-      "id": "node1",
-      "name": "Sequence",
-      "parentId": "rootNode",
-      "childrenIds": ["node3", "node4", "node5"]
-    },
-    "node2": {
-      "type": "ParallelNode",
-      "id": "node2",
-      "name": "Parallel",
-      "parentId": "rootNode",
-      "childrenIds": ["node6", "node7", "node8"]
-    },
-    "node3": {
-      "type": "InvertNode",
-      "id": "node3",
-      "name": "Invert",
-      "parentId": "node1",
-      "childrenIds": ["node14"]
-    },
-    "node4": {
-      "type": "RetryNode",
-      "id": "node4",
-      "name": "Retry",
-      "parentId": "node1",
-      "repeatCount":7,
-      "childrenIds": ["node15"]
-    },
-    "node5": {
-      "type": "RepeatNode",
-      "id": "node5",
-      "name": "Repeat",
-      "parentId": "node1",
-      "repeatCount":10,
-      "childrenIds": ["node16"]
-    },
-    "node6": {
-      "type": "WaitNode",
-      "id": "node6",
-      "name": "Wait",
-      "parentId": "node2",
-      "time":5,
-      "condition":null,
-      "childrenIds": []
-    },
-    "node7": {
-      "type": "RandomSelector",
-      "id": "node7",
-      "name": "RandomSelector",
-      "parentId": "node2",
-      "childrenIds": ["node17", "node18"]
-    },
-    "node8": {
-      "type": "ActionNode",
-      "id": "node8",
-      "name": "Action",
-      "parentId": "node2",
-      "actionName":"cast",
-      "paramKeys":'12',
-      "childrenIds": []
-    },
-    "node10": {
-      "type": "LoopNode",
-      "id": "node10",
-      "name": "Loop",
-      "parentId": "rootNode",
-      "loopCount":5,
-      "childrenIds": ["node19"]
-    },
-    "node11": {
-      "type": "FailerNode",
-      "id": "node11",
-      "name": "Failer",
-      "parentId": "rootNode",
-      "childrenIds": []
-    },
-    "node12": {
-      "type": "SucceederNode",
-      "id": "node12",
-      "name": "Succeeder",
-      "parentId": "rootNode",
-      "childrenIds": []
-    },
-    "node13": {
-      "type": "ActionNode",
-      "id": "node13",
-      "name": "Action",
-      "parentId": "rootNode",
-      "actionName":"cast",
-      "paramKeys":'1',
-      "childrenIds": []
-    },
-    "node14": {
-      "type": "ActionNode",
-      "id": "node14",
-      "name": "Action",
-      "parentId": "node3",
-      "actionName":"target",
-      "paramKeys":['mt'],
-      "childrenIds": []
-    },
-    "node15": {
-      "type": "ActionNode",
-      "id": "node15",
-      "name": "Action",
-      "parentId": "node4",
-      "actionName":"stand",
-      "paramKeys":[],
-      "childrenIds": []
-    },
-    "node16": {
-      "type": "ActionNode",
-      "id": "node16",
-      "name": "Action",
-      "parentId": "node5",
-      "actionName":"sit",
-      "paramKeys":'',
-      "childrenIds": []
-    },
-    "node17": {
-      "type": "ActionNode",
-      "id": "node17",
-      "name": "Action",
-      "parentId": "node7",
-      "actionName":"tack",
-      "paramKeys":'x,y,e',
-      "childrenIds": []
-    },
-    "node18": {
-      "type": "ActionNode",
-      "id": "node18",
-      "name": "Action",
-      "parentId": "node7",
-      "actionName":"attack",
-      "paramKeys":'a,z,e',
-      "childrenIds": []
-    },
-    "node19": {
-      "type": "ConditionNode",
-      "id": "node19",
-      "name": "Condition",
-      "parentId": "node10",
-      "conditionName":"foob",
-      "childrenIds": []
-    }
-  }
-  nextTick(()=>{
-    const jsonString = JSON.stringify(simpleNode);
+  // const nodeData = {
+  //   node1: {
+  //     type: "SequenceNode",
+  //     id: "node1",
+  //     name: "Node A",
+  //     parentId: null,
+  //     childrenIds: ["node2", "node6", "node7"]
+  //   },
+  //   node2: {
+  //     type: "SelectNode",
+  //     id: "node2",
+  //     name: "attack",
+  //     parentId: "node1",
+  //     childrenIds: ["node14", "node4", "node5"]
+  //   },
+  //   node14: {
+  //     type: "InvertNode",
+  //     id: "node14",
+  //     name: "SpitInverter",
+  //     parentId: "node2",
+  //     childrenIds: ["node3"]
+  //   },
+  //   node3: {
+  //     type: "ActionNode",
+  //     id: "node3",
+  //     name: "Spit",
+  //     parentId: "node14",
+  //     childrenIds: []
+  //   },
+  //   node4: {
+  //     type: "ActionNode",
+  //     id: "node4",
+  //     name: "Kick",
+  //     parentId: "node2",
+  //     childrenIds: []
+  //   },
+  //   node5: {
+  //     type: "ActionNode",
+  //     id: "node5",
+  //     name: "Punch",
+  //     parentId: "node2",
+  //     childrenIds: []
+  //   },
+  //   node6: {
+  //     type: "ActionNode",
+  //     id: "node6",
+  //     name: "bite",
+  //     parentId: "node1",
+  //     childrenIds: []
+  //   },
+  //   node7: {
+  //     type: "SequenceNode",
+  //     id: "node7",
+  //     name: "defend",
+  //     parentId: "node1",
+  //     childrenIds: ["node8", "node9", "node10"]
+  //   },
+  //   node8: {
+  //     type: "ActionNode",
+  //     id: "node8",
+  //     name: "Parry",
+  //     parentId: "node7",
+  //     childrenIds: []
+  //   },
+  //   node9: {
+  //     type: "ActionNode",
+  //     id: "node9",
+  //     name: "Riposte",
+  //     parentId: "node7",
+  //     childrenIds: []
+  //   },
+  //   node10: {
+  //     type: "SequenceNode",
+  //     id: "node10",
+  //     name: "Shield",
+  //     parentId: "node7",
+  //     childrenIds: ["node12", "node13", "node11"]
+  //   }, node12: {
+  //     type: "ActionNode",
+  //     id: "node12",
+  //     name: "Hold Up Shield",
+  //     parentId: "node10",
+  //     childrenIds: []
+  //   },
+  //   node11: {
+  //     type: "ActionNode",
+  //     id: "node11",
+  //     name: "Grab Shield",
+  //     parentId: "node10",
+  //     childrenIds: []
+  //   },
+  //
+  //   node13: {
+  //     type: "ActionNode",
+  //     id: "node13",
+  //     name: "Deflect Attack",
+  //     parentId: "node10",
+  //     childrenIds: []
+  //   }
+  // }
+  // const simpleNode = {
+  //   "n0": {
+  //     "name": "Root Node",
+  //     "type": "SequenceNode",
+  //     "id": "n0",
+  //     "parentId": null,
+  //     "childrenIds": ["n1", "n3", "n4"]
+  //   },
+  //   "n1": {
+  //     "name": "TargetInverter",
+  //     "id": "n1",
+  //     "type": "InvertNode",
+  //     "parentId": "n0",
+  //     "childrenIds": ["n2"]
+  //   },
+  //   "n2": {
+  //     "name": "Have Target",
+  //     "id": "n2",
+  //     "type": "ConditionNode",
+  //     "conditionName": "haveCorrectTarget",
+  //     "parentId": "n1",
+  //     "paramKeys": ["targetId"]
+  //   },
+  //   "n3": {
+  //     "name": "Target Is Valid",
+  //     "id": "n3",
+  //     "type": "ConditionNode",
+  //     "conditionName": "isValidTarget",
+  //     "parentId": "n0",
+  //     "paramKeys": ["targetId", "spawnType"]
+  //   },
+  //   "n4": {
+  //     "name": "Target",
+  //     "id": "n4",
+  //     "type": "ActionNode",
+  //     "actionName": "target",
+  //     "parentId": "n0",
+  //     "paramKeys": ["targetId", "spawnType"]
+  //   }
+  // }
+  const jsonString = '{  "name": "Root Node",  "type": "SequenceNode",  "children": [    {      "name": "TargetInverter",      "type": "InvertNode",      "children": [        {          "name": "Have Target",          "type": "ConditionNode",          "conditionName": "haveCorrectTarget",          "paramKeys": [            "targetId"          ]        }      ]    },    {      "name": "Target Is Valid",      "type": "ConditionNode",      "conditionName": "isValidTarget",      "paramKeys": [        "targetId",        "spawnType"      ]    },    {      "name": "Target",      "type": "ActionNode",      "actionName": "target",      "paramKeys": [        "targetId",        "spawnType"      ]    }  ]} ';
+  
+  nextTick(() => {
+    // const jsonString = JSON.stringify(simpleNode);
     nodeStore.loadTree(jsonString);
     nodeStore.setupLayoutWatchers();
     konvaStageRef.value.centerAndZoomStage();
@@ -381,15 +269,15 @@ onMounted(() => {
       <konva-stage
           :containerRef="containerRef!"
           @nodeIntersection="handleNodeIntersection"
-      ref="konvaStageRef"/>
+          ref="konvaStageRef"/>
     </div>
     <div class="editor">
       <tree-node-editor/>
     </div>
   </div>
-  <confirmation-dialog ref="confirmDialogRef"  @action="handleDialogAction">
+  <confirmation-dialog ref="confirmDialogRef" @action="handleDialogAction">
     <template #heading>Confirm Node Move</template>
-    {{message}}
+    {{ message }}
   </confirmation-dialog>
 </template>
 

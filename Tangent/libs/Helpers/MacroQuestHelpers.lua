@@ -1,6 +1,6 @@
 require "libs.Helpers.StringFunctions"
 require "libs.Helpers.MathFunctions"
----@type mq
+---@class Mq
 local mq = require("mq")
 ---Checks if the specified spawn ID is of the specified type
 ---@return boolean
@@ -88,7 +88,9 @@ end
 ---@param dropDownName string
 ---@param valueToSelect string
 function mq.SelectListItem(windowName, dropDownName, valueToSelect)
+    ---@type MQWindow
     local dropdown = mq.TLO.Window(windowName).Child(dropDownName)
+    ---@type string
     local optionToSelect = dropdown.List(valueToSelect)()
     if optionToSelect and dropdown.GetCurSel() ~= optionToSelect then
         dropdown.Select(optionToSelect)
@@ -96,7 +98,7 @@ function mq.SelectListItem(windowName, dropDownName, valueToSelect)
 end
 
 ---Is the character in the correct position relative to the provided spawn
----@param spawn SpawnType
+---@param spawn spawn
 ---@param position ArcValue
 ---@return boolean
 function mq.InPosition(spawn, position)

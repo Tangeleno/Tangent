@@ -2,25 +2,25 @@ local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local Node = require "libs.behavior.nodes.node"
 local Actions = require "libs.behavior.actions"
----@type ActionNode
+---@class ActionNode
 local ActionNode = {}
 ---@param name string @Name of the Action node
 ---@param actionName string @Name of the action to perform
 ---@param paramKeys string[] @Keys to extract the parameters from the blackboard
 ---@return ActionNode @The created ActionNode instance
 function ActionNode.new(name, actionName, paramKeys)
+    paramKeys = paramKeys or {}
     local function NoOp()
     end
     ---@class ActionNode:Node
     local self = Node.new(name)
     self.NodeType = "ActionNode"
-
-    mq.Write.Debug("Creating ActionNode: %s, with action: %s", name, actionName)
+    mq.Write.Trace("Creating %s: %s with action %s, paramKeys {%s}", self.NodeType, self.Name, actionName,table.concat(paramKeys, ","))
 
     -- Loading the action function safely
     local status, action = pcall(function() return Actions[actionName] end)
     if not status then
-        mq.Write.Error("Error: Unknown action '%s' Setting function to NoOp", actionName)
+        mq.Write.Error("Error: %s: Unknown action '%s' Setting function to NoOp", self.Name, actionName)
         action = NoOp
     end
     self.Action = action
@@ -35,7 +35,7 @@ function ActionNode.new(name, actionName, paramKeys)
         -- Safely call the stored action with the parameters and return its node state
         local success, result = pcall(function() return self.Action(unpack(params)) end)
         if not success then
-            mq.Write.Error("Error executing action '%s': %s", actionName, result)
+            mq.Write.Error("Error %s:  executing action '%s': %s",self.Name, actionName, result)
             return NodeState.Failure
         end
         return result
@@ -43,4 +43,5 @@ function ActionNode.new(name, actionName, paramKeys)
 
     return self
 end
+
 return ActionNode
