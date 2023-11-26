@@ -26,7 +26,7 @@ const saveChanges = function(){
   nodeStore.selectedNode.type = selectedNodeCopy.value.type;
   for (const input of NodeDetails[selectedNodeCopy.value.type].inputs) {
     console.log(input.name)
-    nodeStore.selectedNode[input.name] =selectedNodeCopy.value[input.name] 
+    nodeStore.selectedNode.inputs[input.name] =selectedNodeCopy.value.inputs[input.name] 
   }
 }
 
@@ -51,16 +51,16 @@ const saveChanges = function(){
         <fa-icon icon="circle-info" :title="input.description"></fa-icon>
       </span>
       
-      <template v-if="input.type === 'string' || input.type === 'number'">
-        <input v-model="selectedNodeCopy[input.name]" type="text" :placeholder="input.description">
+      <template v-if="input.type === 'string' || input.type === 'string[]'">
+        <input v-model="selectedNodeCopy.inputs[input.name]" type="text" :placeholder="input.description">
       </template>
-      
-      <template v-if="input.type === 'string[]'">
-        <textarea v-model="selectedNodeCopy[input.name]" :placeholder="input.description"></textarea>
+
+      <template v-if="input.type === 'number'">
+        <input v-model="selectedNodeCopy.inputs[input.name]" type="number" :placeholder="input.description">
       </template>
 
       <template v-if="input.type === 'condition' || input.type === 'action'">
-        <input v-model="selectedNodeCopy[input.name]" :list="input.type + '-list'"/>
+        <input v-model="selectedNodeCopy.inputs[input.name]" :list="input.type + '-list'"/>
       </template>
     </div>
     <button :disabled="!hasChanges" @click="saveChanges">Apply Changes</button>

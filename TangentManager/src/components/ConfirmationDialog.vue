@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import {defineEmits, onUpdated, ref} from 'vue';
+import { onUpdated, ref} from 'vue';
 
 const isVisible = ref(false);
 const emit = defineEmits(['action']);

@@ -21,5 +21,6 @@ provide('openMenuItem', openMenuItem);
   align-content: flex-end;
   margin: 0;
   padding: 0;
+  cursor: pointer;
 }
 </style>

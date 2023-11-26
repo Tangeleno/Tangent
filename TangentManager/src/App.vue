@@ -4,7 +4,7 @@ import navigationBar from "./components/NavigationBar.vue";
 
 <template>
   <main class="container">
-    <navigation-bar img="/public/tangent-logo.png"></navigation-bar>
+    <navigation-bar img="/Tangent-logo.png"></navigation-bar>
     <div class="content">
       <router-view></router-view>
     </div>

@@ -34,6 +34,7 @@ onBeforeUnmount(() => {
 
 const handleClick = (event) => {
   event.stopPropagation();
+  console.log("menu item clicked")
   if (props.action) {
     emit('item-clicked', props.action);
   } else if (hasChildren.value) {
@@ -96,9 +97,6 @@ const closeMenu = () => {
   margin: 0;
   display: block; /* Make it block-level */;
   text-align: center;
-}
-
-.text-menu-item .text-menu-item {
 }
 
 .text-menu-item:hover > .text {

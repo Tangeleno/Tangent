@@ -1,13 +1,26 @@
-﻿export type TreeNode = {
+﻿export class TreeNode{
     type: NodeType;
     id: string;
     name: string;
     x: number;
     y: number;
-    parentId: string | null; // ID of the parent node
-    childrenIds: string[]; // Array of IDs representing the children in order
-    [key: string]: any;
-};
+    parentId: string | null;
+    inputs:Record<string,any>;
+    childrenIds: string[];
+    
+    constructor(type: NodeType, id: string) {
+        this.type = type;
+        this.id = id;
+        this.name = "";
+        this.x = 0;
+        this.y = 0;
+        this.parentId = null;
+        this.childrenIds = [];
+        this.inputs = {}
+    }
+
+    // Additional methods or properties can be added here
+}
 
 type NodeInput = {
     type: string;
@@ -16,8 +29,8 @@ type NodeInput = {
     name: string,
     default:any,
     display: string,
-    min: number,
-    max: number,
+    min?: number,
+    max?: number,
 };
 
 
@@ -139,7 +152,7 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
                 name: 'paramKeys',
                 required: false,
                 display: 'Parameters',
-                type: 'string',
+                type: 'string[]',
                 description: 'Keys used to extract the parameters from the blackboard.'
             },
         ],
@@ -171,7 +184,7 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
                 name: 'paramKeys',
                 required: false,
                 display: 'Parameters',
-                type: 'string',
+                type: 'string[]',
                 description: 'Keys used to extract the parameters from the blackboard.'
             }
         ],

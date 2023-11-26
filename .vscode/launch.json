@@ -17,7 +17,11 @@
             "request": "launch",
             "name": "Launch Chrome against localhost",
             "url": "https://localhost:5173",
-            "webRoot": "${workspaceFolder}/TangentManager"
+            "webRoot": "${workspaceFolder}/TangentManager",
+            "userDataDir": false, // This tells VS Code to use an existing profile
+            "runtimeArgs": [
+              "--profile-directory=Default" // Replace with your profile name
+            ]
           }
     ],
     "compounds": [
@@ -27,3 +31,4 @@
         }
       ]
 }
+

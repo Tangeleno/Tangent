@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { NodeDetails, TreeNode } from "@/types/TreeNode.ts";
-import { nodeStore } from "@/stores";
+import { NodeDetails, NodeType, TreeNode } from "@/types/TreeNode.ts";
 import { hierarchy, tree } from 'd3-hierarchy';
 import { watch } from 'vue';
+
 
 export const useNodeStore = defineStore({
     id: 'nodeStore',
@@ -24,6 +24,15 @@ export const useNodeStore = defineStore({
         }
     },
     actions: {
+        generateNodeId() {
+            let nodeId = `node-${this.nextNodeId.toString().padStart(3, '0')}`;
+            this.nextNodeId++;
+            while (this.nodes[nodeId]) {
+                nodeId = `node-${this.nextNodeId.toString().padStart(3, '0')}`;
+                this.nextNodeId++;
+            }
+            return nodeId;
+        },
         selectNode(nodeId: string) {
             if (this.selectedNodeId == nodeId) {
                 this.selectedNodeId = null;
@@ -32,11 +41,70 @@ export const useNodeStore = defineStore({
             }
 
         },
-        updateNode(nodeIdToUpdate: string, node: TreeNode) {
-            let nodeToUpdate = this.nodes[nodeIdToUpdate]
-            for (const childId of nodeToUpdate.childrenIds) {
-                this.nodes[childId].parentId = null
+        deleteSelectedNode() {
+            if (this.selectedNodeId == null)
+                return;
+
+            this.deleteChildren(this.nodes[this.selectedNodeId])
+            delete this.nodes[this.selectedNodeId]
+            this.selectedNodeId = null
+        },
+        generateTreeJson() {
+
+            function createBTNode(node: TreeNode) {
+                let btNode = {
+                    name: node.name,
+                    id: node.id,
+                    type: node.type
+                } as any
+
+                for (const inputsKey of NodeDetails[node.type].inputs) {
+                    if (inputsKey.type === "string[]") {
+                        btNode[inputsKey.name] = node.inputs[inputsKey.name].split(',');
+                    } else {
+                        btNode[inputsKey.name] = node.inputs[inputsKey.name]
+                    }
+                }
+                return btNode
             }
+
+            function createChildrenNodes(node: TreeNode, nodes: Record<string, TreeNode>) {
+                let children = [];
+                if (node.childrenIds) {
+                    for (const childNodeId of node.childrenIds) {
+                        let child = createBTNode(nodes[childNodeId])
+                        child.children = createChildrenNodes(nodes[childNodeId], nodes);
+                        children.push(child);
+                    }
+                }
+                return children;
+            }
+
+            //identify the root node, and generate all the nodes
+            //we set values to get rid of stupid typescript errors
+            let rootNode = {} as any;
+            for (const nodeId in this.nodes) {
+                if (this.isRootNode(nodeId)) {
+                    rootNode = createBTNode(this.nodes[nodeId]);
+                    break;
+                }
+            }
+            rootNode.children = createChildrenNodes(this.nodes[rootNode.id], this.nodes);
+            return JSON.stringify(rootNode);
+        },
+        // updateNode(nodeIdToUpdate: string, node: TreeNode) {
+        //     let nodeToUpdate = this.nodes[nodeIdToUpdate]
+        //     for (const childId of nodeToUpdate.childrenIds) {
+        //         this.nodes[childId].parentId = null
+        //     }
+        // },
+        addNode(nodeType: NodeType) {
+            let newNode = new TreeNode(nodeType, this.generateNodeId())
+            newNode.name = `${nodeType}-${newNode.id}`;
+            newNode.x = 0;
+            newNode.y = 0;
+            this.nodes[newNode.id] = newNode;
+            this.applyTreeLayout(newNode.id)
         },
         setupLayoutWatchers() {
             // Watch for changes in nodeHeight and regenerate layout
@@ -65,17 +133,17 @@ export const useNodeStore = defineStore({
 
             function flatten(node: any, parentId: string | null, store: any) {
                 //convert the current node
-                let currentNode = {} as TreeNode
-                currentNode.id = node.id || `Node-${store.nextNodeId++}`;
-
+                let currentNode = new TreeNode(node.type, node.id || store.generateNodeId());
+                currentNode.name = node.name;
                 //add the current node
                 nodes[currentNode.id] = currentNode
-                currentNode.name = node.name;
-                currentNode.type = node.type;
-                currentNode.childrenIds = [];
-                currentNode.parentId = null;
+
                 for (const inputsKey of NodeDetails[currentNode.type].inputs) {
-                    currentNode[inputsKey.name] = node[inputsKey.name]
+                    if (inputsKey.type === "string[]") {
+                        currentNode.inputs[inputsKey.name] = node[inputsKey.name].join(',')
+                    } else {
+                        currentNode.inputs[inputsKey.name] = node[inputsKey.name]
+                    }
                 }
                 if (parentId) {
                     currentNode.parentId = parentId
@@ -122,28 +190,32 @@ export const useNodeStore = defineStore({
                     });
 
                 // Apply the layout to our hierarchical data
+                // @ts-ignore: Typescript is just being silly here... I'm not 100% why I'm using it over jsdocs anymore
                 layout(rootHierarchy);
 
                 // Update our data with the layout's results
                 rootHierarchy.each(d => {
+                    // @ts-ignore: D3 adds 'x' and 'y' properties dynamically
                     this.nodes[d.data.id].x = d.y + baseX; // Switching x and y because we want a horizontal layout
+                    // @ts-ignore: D3 adds 'x' and 'y' properties dynamically
                     this.nodes[d.data.id].y = d.x + baseY;
                 });
             });
 
             return this.nodes;
         },
-        validateTree(newNode: Record<string, TreeNode>) {
+        validateTree(_newNode: Record<string, TreeNode>) {
+            //TODO: This
             return true
         },
-        isRootNode(nodeId:string) {
+        isRootNode(nodeId: string) {
             return !(this.nodes[nodeId].parentId)
         },
-        canPlaceNode(possibleParentNodeId:string, possibleChildNodeId:string) {
+        canPlaceNode(possibleParentNodeId: string, possibleChildNodeId: string) {
             let possibleParent = this.nodes[possibleParentNodeId];
 
             // Helper function to traverse the hierarchy upwards.
-            const hasAncestor = (node:TreeNode, ancestorId:string) => {
+            const hasAncestor = (node: TreeNode, ancestorId: string) => {
                 while (node && node.parentId) {
                     if (node.parentId === ancestorId) {
                         return true;
@@ -177,7 +249,7 @@ export const useNodeStore = defineStore({
             //all our checks passed, return success I guess?
             return result;
         },
-        deleteChildren(node:TreeNode) {
+        deleteChildren(node: TreeNode) {
             if (node == undefined || !node.childrenIds)
                 return;
             for (const childId of node.childrenIds) {

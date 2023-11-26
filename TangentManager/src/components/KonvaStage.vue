@@ -379,6 +379,7 @@ const toggleChildListening = (node, status) => {
 };
 
 const startDrag = (event: Konva.KonvaEventObject<MouseEvent>) => {
+  if(Object.keys(nodeStore.nodes).length === 0) return;
   if (isShapeDragging.value) return; // Prevent stage dragging if a shape is being dragged
 
   isDragging = true;
@@ -412,18 +413,28 @@ const centerAndZoomStage = () => {
     maxX = Math.max(maxX, node.x + nodeStore.nodeWidth);
     maxY = Math.max(maxY, node.y + nodeStore.nodeHeight);
   }
+  
 
   // 2. Determine the center of the bounding box
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
+  let centerX = (minX + maxX) / 2;
+  let centerY = (minY + maxY) / 2;
 
   // 3. Determine the scaling factor
   const treeWidth = maxX - minX;
   const treeHeight = maxY - minY;
   const scaleX = configKonva.width / treeWidth;
   const scaleY = configKonva.height / treeHeight;
-  const scale = Math.min(scaleX, scaleY);
-
+  let scale = Math.min(scaleX, scaleY);
+  if(Number.isNaN(centerX)) {
+    centerX = 75
+  }
+  if(Number.isNaN(centerY)) {
+    centerY = 50
+  }
+  
+  if(Number.isNaN(scale) || scale >3) {
+    scale = 3
+  }
   // 4. Apply the transformation
   stage.position({x: -centerX * scale + configKonva.width / 2, y: -centerY * scale + configKonva.height / 2});
   stage.scale({x: scale, y: scale});
