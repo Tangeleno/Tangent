@@ -1,7 +1,6 @@
 ﻿export class TreeNode{
     type: NodeType;
     id: string;
-    name: string;
     x: number;
     y: number;
     parentId: string | null;
@@ -11,7 +10,6 @@
     constructor(type: NodeType, id: string) {
         this.type = type;
         this.id = id;
-        this.name = "";
         this.x = 0;
         this.y = 0;
         this.parentId = null;

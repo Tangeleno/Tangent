@@ -53,7 +53,7 @@ export const useNodeStore = defineStore({
 
             function createBTNode(node: TreeNode) {
                 let btNode = {
-                    name: node.name,
+                    name: node.inputs.name,
                     id: node.id,
                     type: node.type
                 } as any
@@ -100,7 +100,7 @@ export const useNodeStore = defineStore({
         // },
         addNode(nodeType: NodeType) {
             let newNode = new TreeNode(nodeType, this.generateNodeId())
-            newNode.name = `${nodeType}-${newNode.id}`;
+            newNode.inputs.name = `${nodeType}-${newNode.id}`;
             newNode.x = 0;
             newNode.y = 0;
             this.nodes[newNode.id] = newNode;
@@ -133,8 +133,8 @@ export const useNodeStore = defineStore({
 
             function flatten(node: any, parentId: string | null, store: any) {
                 //convert the current node
-                let currentNode = new TreeNode(node.type, node.id || store.generateNodeId());
-                currentNode.name = node.name;
+                let currentNode = new TreeNode(node.type, store.generateNodeId());
+                // currentNode.inputs.name = node.name;
                 //add the current node
                 nodes[currentNode.id] = currentNode
 
@@ -164,44 +164,54 @@ export const useNodeStore = defineStore({
             flatten(nestedTree, null, this)
             if (!this.validateTree(nodes))
                 return false;
-            this.nodes = nodes
+            for (const node in nodes) {
+                this.nodes[nodes[node].id] = nodes[node];
+            }
             this.applyTreeLayout();
             return true;
         },
         applyTreeLayout(rootId?: string) {
             // If rootId is provided, use it. Else, gather all nodes that don't have a parent.
             const rootNodes = rootId ? [this.nodes[rootId]] : Object.values(this.nodes).filter(node => !node.parentId);
-
+            const proxyRoot = rootNodes.length > 1 ? this.generateNodeId() : null;
+            let rootNode = null as TreeNode | null;
+            if (proxyRoot) {
+                this.nodes[proxyRoot] = new TreeNode(NodeType.Select, proxyRoot);
+                this.nodes[proxyRoot].childrenIds = rootNodes.map(node => node.id);
+                rootNode = this.nodes[proxyRoot];
+            } else {
+                rootNode = rootNodes[0];
+            }
             // Determine the starting coordinates
             const baseX = rootId ? this.nodes[rootId].x : 0;
             const baseY = rootId ? this.nodes[rootId].y : 0;
-
             // For each root node, generate its hierarchy and layout.
-            rootNodes.forEach(rootNode => {
-                const rootHierarchy = hierarchy(rootNode, d => {
-                    return d.childrenIds ? d.childrenIds.map(id => this.nodes[id]) : null;
-                });
 
-                // Create a tree layout
-                const layout = tree()
-                    .nodeSize([this.nodeWidth + this.verticalNodeSpacing, this.nodeHeight + this.horizontalNodeSpacing])
-                    .separation((a, b) => {
-                        return a.parent === b.parent ? 1 : 2;
-                    });
-
-                // Apply the layout to our hierarchical data
-                // @ts-ignore: Typescript is just being silly here... I'm not 100% why I'm using it over jsdocs anymore
-                layout(rootHierarchy);
-
-                // Update our data with the layout's results
-                rootHierarchy.each(d => {
-                    // @ts-ignore: D3 adds 'x' and 'y' properties dynamically
-                    this.nodes[d.data.id].x = d.y + baseX; // Switching x and y because we want a horizontal layout
-                    // @ts-ignore: D3 adds 'x' and 'y' properties dynamically
-                    this.nodes[d.data.id].y = d.x + baseY;
-                });
+            const rootHierarchy = hierarchy(rootNode, d => {
+                return d.childrenIds ? d.childrenIds.map(id => this.nodes[id]) : null;
             });
 
+            // Create a tree layout
+            const layout = tree()
+                .nodeSize([this.nodeWidth + this.verticalNodeSpacing, this.nodeHeight + this.horizontalNodeSpacing])
+                .separation((a, b) => {
+                    return a.parent === b.parent ? 1 : 2;
+                });
+
+            // Apply the layout to our hierarchical data
+            // @ts-ignore: Typescript is just being silly here... I'm not 100% why I'm using it over jsdocs anymore
+            layout(rootHierarchy);
+
+            // Update our data with the layout's results
+            rootHierarchy.each(d => {
+                // @ts-ignore: D3 adds 'x' and 'y' properties dynamically
+                this.nodes[d.data.id].x = d.y + baseX; // Switching x and y because we want a horizontal layout
+                // @ts-ignore: D3 adds 'x' and 'y' properties dynamically
+                this.nodes[d.data.id].y = d.x + baseY;
+            });
+            if(proxyRoot){
+                delete this.nodes[proxyRoot];
+            }
             return this.nodes;
         },
         validateTree(_newNode: Record<string, TreeNode>) {
@@ -243,7 +253,7 @@ export const useNodeStore = defineStore({
                 let currentChild = this.nodes[possibleParent.childrenIds[0]]
                 result.canPlace = true;
                 result.shouldConfirm = true;
-                result.message = `Placing this node will replace the current node ${currentChild.name}`
+                result.message = `Placing this node will replace the current node ${currentChild.inputs.name}`
             }
             result.canPlace = true;
             //all our checks passed, return success I guess?

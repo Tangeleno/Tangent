@@ -96,7 +96,7 @@
             :height="nodeHeight"
             :stroke="'#010101'"
             :strokeWidth="3"
-            :text="node.name"
+            :text="node.inputs.name"
             :width="nodeWidth"
             align="center"
             verticalAlign="middle"/>

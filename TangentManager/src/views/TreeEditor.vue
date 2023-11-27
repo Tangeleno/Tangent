@@ -71,6 +71,7 @@
       };
       reader.readAsText(file);
     }
+    target.value='';
   }
 
   function loadJsonClicked() {
