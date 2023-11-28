@@ -37,13 +37,13 @@ function Node.new(name)
     ---@param blackboard table @A table that contains shared data for the behavior tree, typically used for storing and retrieving values across different nodes.
     ---@return NodeState @Returns the state of the node after the tick operation, which can be one of the following values: Success, Failure, Running, or Invalid.
     function self.Tick(blackboard)
-        mq.Write.Trace("Tick entered for %s %s", self.NodeType, self.Name)
+        mq.Write.Debug("Tick entered for %s %s", self.NodeType, self.Name)
         if self.State ~= NodeState.Running then
             mq.Write.Trace("Initializing Node %s %s", self.NodeType, self.Name)
             self._OnInitialize(blackboard)
         end
         self.State = self._Update(blackboard)
-        mq.Write.Trace("%s %s returned the status %s", self.NodeType, self.Name, NodeState[self.State])
+        mq.Write.Debug("%s %s returned the status %s", self.NodeType, self.Name, NodeState[self.State])
         if self.State ~= NodeState.Running then
             mq.Write.Trace("Terminating Node %s %s", self.NodeType, self.Name)
             self._OnTerminate(blackboard)
@@ -60,7 +60,7 @@ function Node.new(name)
     ---Returns true if the node is in a terminated state; otherwise, false.
     ---@return boolean
     function self.IsTerminated()
-        return self.State == NodeState.Success or self.State == NodeState.Failure
+        return self.State == NodeState.Success or self.State == NodeState.Failure or self.State == NodeState.Aborted
     end
 
     ---Returns true if the node is in a success state; otherwise, false.

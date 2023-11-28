@@ -1,12 +1,12 @@
-﻿export class TreeNode{
+﻿export class TreeNode {
     type: NodeType;
     id: string;
     x: number;
     y: number;
     parentId: string | null;
-    inputs:Record<string,any>;
+    inputs: Record<string, any>;
     childrenIds: string[];
-    
+
     constructor(type: NodeType, id: string) {
         this.type = type;
         this.id = id;
@@ -25,7 +25,7 @@ type NodeInput = {
     required: boolean;
     description: string;
     name: string,
-    default:any,
+    default: any,
     display: string,
     min?: number,
     max?: number,
@@ -55,35 +55,40 @@ export enum NodeType {
     Condition = 'ConditionNode'
 }
 
-export enum Actions{
+export enum Actions {
     NoOp = "NoOp",
 }
 
-export enum Conditions{
-    AlwaysFalse ="AlwaysFalse",
+export enum Conditions {
+    AlwaysFalse = "AlwaysFalse",
+    standing = "standing",
+    isValidTarget = "isValidTarget",
+    haveCorrectTarget = "haveCorrectTarget",
+    spellMemorized = "spellMemorized",
+    spellMemorizing = "spellMemorizing"
 }
 
 export const NodeDetails: Record<NodeType, NodeDetails> = {
     [NodeType.Select]: {
         description: 'Returns the first successful child or failure if all children fail',
-        inputs: [{name: 'name', display:'Name', type: 'string', required: true, description: 'The name of the node'},],
+        inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: true,
         isDecorator: false
     },
     [NodeType.Sequence]: {
         description: 'Returns success only if all children succeed in order',
-        inputs: [{name: 'name', display:'Name',type: 'string', required: true, description: 'The name of the node'},],
+        inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: true,
         isDecorator: false
     },
     [NodeType.Parallel]: {
         description: 'Runs all children simultaneously, returning success based on a success percentage',
         inputs: [
-            {name: 'name',display:'Name', type: 'string', required: true, description: 'The name of the node'},
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },
             {
                 name: 'percentage',
                 type: 'number',
-                default:50,
+                default: 50,
                 display: 'Percentage',
                 min: '0',
                 max: '100',
@@ -96,18 +101,18 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     },
     [NodeType.Invert]: {
         description: 'Inverts the result of its child',
-        inputs: [{name: 'name',display:'Name', type: 'string', required: true, description: 'The name of the node'},],
+        inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: true,
         isDecorator: true
     },
     [NodeType.Repeat]: {
         description: 'Repeats its child the specified number of times or until failure',
         inputs: [
-            {name: 'name',display:'Name', type: 'string', required: true, description: 'Name of the node.'},
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
             {
                 name: 'repeatCount',
                 type: 'number',
-                default:1,
+                default: 1,
                 display: 'Times',
                 min: '1',
                 required: true,
@@ -120,11 +125,11 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     [NodeType.Retry]: {
         description: 'Retries its child the specified number of times or until success',
         inputs: [
-            {name: 'name',display:'Name', type: 'string', required: true, description: 'Name of the node.'},
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
             {
                 name: 'repeatCount',
                 type: 'number',
-                default:1,
+                default: 1,
                 display: 'Times',
                 min: '1',
                 required: true,
@@ -137,13 +142,13 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     [NodeType.Action]: {
         description: 'The `ActionNode` is a specific node type in a Behavior Tree system. It represents an action that can be performed and encapsulates the logic required to execute it.',
         inputs: [
-            {name: 'name',display:'Name', type: 'string', required: true, description: 'Name of the node.'},
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
             {
                 name: 'actionName',
                 required: true,
                 display: 'Action',
                 type: 'action',
-                default:'noop',
+                default: 'noop',
                 description: 'Name of the action to perform.'
             },
             {
@@ -160,8 +165,31 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     [NodeType.Wait]: {
         description: 'The `WaitNode` waits for a specified amount of time or until a condition is met.',
         inputs: [
-            {name: 'name', display:'Name',type: 'string', required: true, description: 'Name of the node.'},
-            {name: 'time', required: true, description: 'Time to wait in seconds.'},
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
+            { name: 'time', display: 'Wait Seconds', type: 'number', required: true, description: 'Time to wait in seconds.' },
+            {
+                name: 'breakConditionKey',
+                display: 'Condition',
+                required: false,
+                type: 'condition',
+                default: 'false',
+                description: 'Name of a condition.'
+            },
+            {
+                name: 'invertCondition',
+                display: 'Invert Condition Result',
+                required: true,
+                type: 'bool',
+                default: false,
+                description: 'Should the result of the condition be flipped (true->false false->true).'
+            },
+            {
+                name: 'paramKeys',
+                required: false,
+                display: 'Parameters',
+                type: 'string[]',
+                description: 'Keys used to extract the parameters from the blackboard.'
+            }
         ],
         canHaveChildren: false,
         isDecorator: false
@@ -169,13 +197,13 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     [NodeType.Condition]: {
         description: 'The `ConditionNode` checks the specified condition, returning successfully if the condition is true, else failure',
         inputs: [
-            {name: 'name', display:'Name',type: 'string', required: true, description: 'Name of the node.'},
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
             {
                 name: 'conditionName',
                 display: 'Condition',
                 required: false,
                 type: 'condition',
-                default:'false',
+                default: 'false',
                 description: 'Name of a condition.'
             },
             {
@@ -191,30 +219,30 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     },
     [NodeType.RandomSelector]: {
         description: 'The `RandomSelector` randomly shuffles its children and then behaves like a regular selector, choosing the first child that succeeds.',
-        inputs: [{name: 'name',display:'Name', type: 'string', required: true, description: 'The name of the node'},],
+        inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: true,
         isDecorator: false
     },
     [NodeType.Failer]: {
         description: 'The `FailerNode` always returns a failure status.',
-        inputs: [{name: 'name',display:'Name', type: 'string', required: true, description: 'The name of the node'},],
+        inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: false,
         isDecorator: false
     },
     [NodeType.Succeeder]: {
         description: 'The `SucceederNode` always returns a success status.',
-        inputs: [{name: 'name',display:'Name', type: 'string', required: true, description: 'The name of the node'},],
+        inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: false,
         isDecorator: false
     },
     [NodeType.Loop]: {
         description: 'The `LoopNode` executes its child node a specified number of times.',
         inputs: [
-            {name: 'name',display:'Name', type: 'string', required: true, description: 'Name of the node.'},
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
             {
                 name: 'loopCount', required: true,
                 type: 'number',
-                default:1,
+                default: 1,
                 display: 'Count',
                 min: '1',
                 description: 'Number of times to execute the child node.'

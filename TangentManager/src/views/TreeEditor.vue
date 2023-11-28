@@ -71,7 +71,7 @@
       };
       reader.readAsText(file);
     }
-    target.value='';
+    target.value = '';
   }
 
   function loadJsonClicked() {
@@ -90,6 +90,23 @@
     URL.revokeObjectURL(url);
   }
 
+  function copyJsonClicked() {
+    const treeJson = nodeStore.generateTreeJson();
+    navigator.clipboard.writeText(treeJson).then(function() {
+            console.log('Text successfully copied to clipboard');
+        }).catch(function(err) {
+            console.error('Could not copy text to clipboard: ', err);
+        });
+  }
+
+  function loadSubtreeClicked(treeName:string){
+    const emptyNodes = Object.keys(nodeStore.nodes).length === 0;
+    nodeStore.loadSubtree(treeName);
+    if (emptyNodes) {
+      konvaStageRef.value.centerAndZoomStage();
+    }
+  }
+
   function handleKeydown(event: any) {
     if (event.key === 'Delete') {
       deleteSelected();
@@ -99,7 +116,7 @@
   function createNode(nodeType: NodeType) {
     const emptyNodes = Object.keys(nodeStore.nodes).length === 0;
     nodeStore.addNode(nodeType);
-    if(emptyNodes){
+    if (emptyNodes) {
       konvaStageRef.value.centerAndZoomStage();
     }
   }
@@ -129,6 +146,7 @@
               Save
               <fa-icon icon="fa-solid fa-floppy-disk"></fa-icon>
             </text-menu-item>
+            <text-menu-item action="Copy" @item-clicked="copyJsonClicked"> Copy Json </text-menu-item>
             <text-menu-item action="Load" @item-clicked="loadJsonClicked"> Load Json </text-menu-item>
           </template>
         </text-menu-item>
@@ -144,6 +162,14 @@
               </template>
             </text-menu-item>
             <text-menu-item @item-clicked="deleteSelected" action="delete">Delete</text-menu-item>
+          </template>
+        </text-menu-item>
+        <text-menu-item>
+          Subtrees
+          <template #children>
+            <text-menu-item v-for="tree in nodeStore.subTrees" @item-clicked="loadSubtreeClicked" :action="tree">
+              {{ tree }}
+            </text-menu-item>
           </template>
         </text-menu-item>
       </text-menu>
