@@ -58,7 +58,13 @@ const saveChanges = function(){
       <template v-if="input.type === 'number'">
         <input v-model="selectedNodeCopy.inputs[input.name]" type="number" :placeholder="input.description">
       </template>
-
+      
+      <template v-if="input.type === 'bool'">
+        <select v-model="selectedNodeCopy.inputs[input.name]" :placeholder="input.description">
+          <option>true</option>
+          <option>false</option>
+        </select>
+      </template>
       <template v-if="input.type === 'condition' || input.type === 'action'">
         <input v-model="selectedNodeCopy.inputs[input.name]" :list="input.type + '-list'"/>
       </template>

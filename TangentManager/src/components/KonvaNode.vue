@@ -92,6 +92,17 @@
     <!-- Render the node's name on the shape -->
     <v-text :fill="'#f7f7f7'"
             :fillAfterStrokeEnabled="true"
+            :fontSize="10"
+            :height="nodeHeight"
+            :stroke="'#010101'"
+            :strokeWidth="3"
+            :text="node.type"
+            :width="nodeWidth"
+            align="center"
+            y=-16
+            verticalAlign="middle"/>
+    <v-text :fill="'#f7f7f7'"
+            :fillAfterStrokeEnabled="true"
             :fontSize="16"
             :height="nodeHeight"
             :stroke="'#010101'"
@@ -105,7 +116,7 @@
 
 <script lang="ts" setup>
 import { computed, PropType } from 'vue';
-import { NodeDetails, NodeType, TreeNode } from "../types/TreeNode.ts";
+import { NodeType, TreeNode } from "../types/TreeNode.ts";
 
 const props = defineProps({
   node: {

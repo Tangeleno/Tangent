@@ -3,6 +3,10 @@ import { NodeDetails, NodeType, TreeNode } from "@/types/TreeNode.ts";
 import { hierarchy, tree } from 'd3-hierarchy';
 import { watch } from 'vue';
 
+const subTrees= {
+    "Target":'{"name":"Target","id":"node-000","type":"SelectNode","children":[{"name":"Have Target","id":"node-003","type":"ConditionNode","conditionName":"haveCorrectTarget","paramKeys":["targetId"],"children":[]},{"name":"Get Target","id":"node-001","type":"SequenceNode","children":[{"name":"Target Is Valid","id":"node-004","type":"ConditionNode","conditionName":"isValidTarget","paramKeys":["targetId","spawnType"],"children":[]},{"name":"Target","id":"node-005","type":"ActionNode","actionName":"target","paramKeys":["targetId","spawnType"],"children":[]}]}]}'
+} as Record<string,string>
+
 
 export const useNodeStore = defineStore({
     id: 'nodeStore',
@@ -21,6 +25,9 @@ export const useNodeStore = defineStore({
                 return null;
             }
             return state.nodes[state.selectedNodeId]
+        },
+        subTrees() {
+            return Object.keys(subTrees);
         }
     },
     actions: {
@@ -44,13 +51,24 @@ export const useNodeStore = defineStore({
         deleteSelectedNode() {
             if (this.selectedNodeId == null)
                 return;
+            let nodeToDelete = this.nodes[this.selectedNodeId];
+            
+            //Delete children
+            this.deleteChildren(nodeToDelete);
 
-            this.deleteChildren(this.nodes[this.selectedNodeId])
+            //Update the parent to remove this node
+            if(nodeToDelete.parentId) {
+                const index = this.nodes[nodeToDelete.parentId].childrenIds.indexOf(nodeToDelete.id);
+                if (index > -1) {
+                    this.nodes[nodeToDelete.parentId].childrenIds.splice(index, 1);
+                }
+            }
+            
+            //delete this node
             delete this.nodes[this.selectedNodeId]
             this.selectedNodeId = null
         },
         generateTreeJson() {
-
             function createBTNode(node: TreeNode) {
                 let btNode = {
                     name: node.inputs.name,
@@ -60,7 +78,12 @@ export const useNodeStore = defineStore({
 
                 for (const inputsKey of NodeDetails[node.type].inputs) {
                     if (inputsKey.type === "string[]") {
-                        btNode[inputsKey.name] = node.inputs[inputsKey.name].split(',');
+                        if(node.inputs[inputsKey.name]) {
+                            btNode[inputsKey.name] = node.inputs[inputsKey.name].split(',');
+                        } else {
+                            btNode[inputsKey.name] = [];
+                        }
+                        
                     } else {
                         btNode[inputsKey.name] = node.inputs[inputsKey.name]
                     }
@@ -92,12 +115,10 @@ export const useNodeStore = defineStore({
             rootNode.children = createChildrenNodes(this.nodes[rootNode.id], this.nodes);
             return JSON.stringify(rootNode);
         },
-        // updateNode(nodeIdToUpdate: string, node: TreeNode) {
-        //     let nodeToUpdate = this.nodes[nodeIdToUpdate]
-        //     for (const childId of nodeToUpdate.childrenIds) {
-        //         this.nodes[childId].parentId = null
-        //     }
-        // },
+        loadSubtree(treeName:string){
+            if(subTrees.hasOwnProperty(treeName))
+                this.loadTree(subTrees[treeName]);
+        },
         addNode(nodeType: NodeType) {
             let newNode = new TreeNode(nodeType, this.generateNodeId())
             newNode.inputs.name = `${nodeType}-${newNode.id}`;
