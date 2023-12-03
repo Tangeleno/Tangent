@@ -1,0 +1,20 @@
+{
+    "name": "My Lua Dev Container",
+    "image": "tangent-test",  // The name of your Docker image
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"donjayamanne.githistory",
+				"xabikos.javascriptsnippets",
+				"sumneko.lua",
+				"actboy168.lua-debug",
+				"esbenp.prettier-vscode",
+				"vue.vscode-typescript-vue-plugin",
+				"vue.volar",
+				"sdras.vue-vscode-snippets",
+				"zenithcodeforge.mq-defs"
+			]
+		}
+	}
+    // You can add other configuration settings as needed
+}

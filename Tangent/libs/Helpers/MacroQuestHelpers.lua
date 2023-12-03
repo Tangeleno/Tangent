@@ -1,7 +1,27 @@
 require "libs.Helpers.StringFunctions"
 require "libs.Helpers.MathFunctions"
 ---@class Mq
-local mq = require("mq")
+local mq = nil;
+
+---@return Mq
+function GenerateMQ()
+    local _mq = {
+        TLO = {
+            Me={}
+        }
+    }
+    return _mq;
+end
+
+local status, module = pcall(require, "mq")
+if status then
+    -- if we're in macroquest load macroquest
+    mq = module
+else
+    --otherwise we're obviously testing so let's mock it out
+    mq = GenerateMQ()
+    --Mock __mq stuff here
+end
 ---Checks if the specified spawn ID is of the specified type
 ---@return boolean
 ---@param spawnSearch integer|string The Id to check
@@ -19,6 +39,8 @@ function mq.IsValidTarget(spawnSearch, type)
     end
     return false
 end
+
+
 
 mq.CombatStates = {
     Unknown = 0,

@@ -5,7 +5,7 @@ local CompositeNode = require "libs.behavior.nodes.composite"
 ---@class SequenceNode
 local SequenceNode = {}
 function SequenceNode.new(name)
-    ---@class SequenceNode:CompositeNode
+    ---@class SequenceNode:CompositeNode @Returns the first failed child or success if all children succeed
     local self = CompositeNode.new(name)
     self.NodeType = "SequenceNode"
     self.CurrentChildIndex = 1
@@ -21,22 +21,13 @@ function SequenceNode.new(name)
             return NodeState.Invalid
         end
 
-        if self.CurrentChildIndex > #self.Children then
-            return NodeState.Success
-        end
-
-        local child = self.Children[self.CurrentChildIndex]
-        local status = child.Tick(blackboard)
-        if status == NodeState.Success then
-            self.CurrentChildIndex = self.CurrentChildIndex + 1
-            if self.CurrentChildIndex > #self.Children then
-                return NodeState.Success
-            else
-                return NodeState.Running
+        for _, child in ipairs(self.Children) do
+            local status = child.Tick(blackboard)
+            if child.IsFailure() or child.IsRunning() then
+                return status
             end
         end
-
-        return status
+        return NodeState.Success
     end
 
     return self

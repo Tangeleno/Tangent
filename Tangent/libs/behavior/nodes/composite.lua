@@ -11,8 +11,17 @@ function CompositeNode.new(name)
     self.Children = {}
     ---@param node Node
     function self.AddChild(node)
-        mq.Write.Trace("%s '%s': Added child node '%s'",self.NodeType, self.Name, node.Name)
+        mq.Write.Trace("%s '%s': Added child node '%s'", self.NodeType, self.Name, node.Name)
         table.insert(self.Children, node)
+    end
+
+    function self._OnTerminate(blackboard)
+        --Clean up children nodes, all nodes need terminated
+        for _, child in ipairs(self.Children) do
+            if (not child.IsTerminated()) then
+                child.Abort()
+            end
+        end
     end
 
     return self

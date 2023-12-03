@@ -1,0 +1,9 @@
+{
+    "mq-defs.etag": "W/\"84f1e2a4db4cf5112e8ccab4bff85052139891b066b224421c8e1c5ff9abc118\"",
+    "Lua.workspace.library": [
+        "C:\\Users\\Tangeleno\\source\\repos\\macroquest\\build\\bin\\release\\modules\\luarocks\\share\\lua\\5.1",
+        "C:\\Users\\Tangeleno\\source\\repos\\mq-definitions",
+        "/root/.vscode-server/data/User/globalStorage/zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest\\mq-definitions-master",
+        "${workspaceFolder}/tangent/annotations"
+    ]
+}

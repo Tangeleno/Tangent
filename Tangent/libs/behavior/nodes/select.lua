@@ -6,10 +6,9 @@ local SelectNode = {}
 ---@param name string @Name of the Select node
 ---@return SelectNode @The created SelectNode instance
 function SelectNode.new(name)
-    ---@class SelectNode:CompositeNode
+    ---@class SelectNode:CompositeNode @Returns the first successful child or failure if all children fail
     local self = CompositeNode.new(name)
     self.NodeType = "SelectNode"
-    self.CurrentChildIndex = 1
     mq.Write.Trace("Creating %s: %s", self.NodeType, self.Name)
     function self._OnInitialize(blackboard)
         self.CurrentChildIndex = 1
@@ -17,25 +16,13 @@ function SelectNode.new(name)
 
     ---@return NodeState
     function self._Update(blackboard)
-        if not self.Children or #self.Children == 0 then
-            mq.Write.Warn("No children found in SelectNode: %s", name)
-            return NodeState.Invalid
+        for _, child in ipairs(self.Children) do
+            local status = child.Tick(blackboard)
+            if child.IsSuccess() or child.IsRunning() then
+                return status
+            end
         end
-
-        if self.CurrentChildIndex > #self.Children then
-            return NodeState.Failure
-        end
-
-        local child = self.Children[self.CurrentChildIndex]
-        local status = child.Tick(blackboard)
-        if status == NodeState.Running then
-            return NodeState.Running
-        elseif status == NodeState.Failure then
-            self.CurrentChildIndex = self.CurrentChildIndex + 1
-            return NodeState.Running
-        else
-            return status
-        end
+        return NodeState.Failure
     end
 
     return self
