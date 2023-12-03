@@ -15,6 +15,10 @@
 				"zenithcodeforge.mq-defs"
 			]
 		}
-	}
+	},
+	"appPort": "5173:5173",
+	"mounts": [
+        "source=${localEnv:USERPROFILE}/.ssh/id_ed25519,target=/root/.ssh/id_ed25519,type=bind"
+    ]
     // You can add other configuration settings as needed
 }
