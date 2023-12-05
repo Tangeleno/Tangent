@@ -16,6 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "d3-hierarchy": "^3.1.2",
     "d3-shape": "^3.2.0",
+    "konva": "^9.2.3",
     "markdown-it": "^13.0.1",
     "markdown-it-abbr": "^1.0.4",
     "markdown-it-anchor": "^8.6.7",
@@ -26,6 +27,7 @@
     "markdown-it-task-lists": "^2.1.1",
     "pinia": "^2.1.6",
     "vue": "^3.3.4",
+    "vue-konva": "^3.0.2",
     "vue-router": "^4.0.13"
   },
   "devDependencies": {

@@ -1,3 +1,4 @@
+---@diagnostic disable: missing-return, lowercase-global, duplicate-set-field
 --- Describe a group of tests
 ---@param name string: Description of the test group
 ---@param callback fun():any A function containing the tests

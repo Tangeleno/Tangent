@@ -1,20 +1,26 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local Node = require "libs.behavior.nodes.node"
+
+--- Creates a node that waits for a specified duration.
 ---@class WaitNode
 local WaitNode = {}
----@param name string @Name of the Wait node.
----@param time number @Time to wait in seconds.
-function WaitNode.new(name, time)
+
+--- Constructor for WaitNode.
+---@param args table @Table containing the arguments for the node.
+---   - name: string @Name of the Wait node.
+---   - time: number @Time to wait in seconds.
+---@return WaitNode @The created WaitNode instance
+function WaitNode.new(args)
     ---@class WaitNode:Node
-    local self = Node.new(name)
+    local self = Node.new(args.name)
     self.NodeType = "WaitNode"
-    mq.Write.Trace("Creating %s: %s waitTime: %f", self.NodeType, self.Name,time)
-    time = time or 0
+    mq.Write.Trace("Creating %s: %s waitTime: %f", self.NodeType, args.name, args.time)
     local elapsedTime = 0
+
     function self._Update(blackboard)
         elapsedTime = elapsedTime + blackboard.deltaTime
-        if elapsedTime >= time then
+        if elapsedTime >= args.time * 1000 then
             return NodeState.Success
         end
         return NodeState.Running
@@ -26,4 +32,5 @@ function WaitNode.new(name, time)
 
     return self
 end
+
 return WaitNode

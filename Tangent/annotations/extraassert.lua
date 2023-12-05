@@ -1,3 +1,4 @@
+---@diagnostic disable: missing-return
 assert = {}
 
 --- Checks if a condition is true.

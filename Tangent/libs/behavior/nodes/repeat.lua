@@ -1,18 +1,23 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
-local DecoratorNode = require "libs.behavior.nodes.decorator"---Repeats the child node the specified number of times, or until failure
+local DecoratorNode = require "libs.behavior.nodes.decorator"
+
+--- Repeats the child node the specified number of times, or until failure.
 ---@class RepeatNode
 local RepeatNode = {}
----@param name string @Name of the Repeat node
----@param repeatCount number @Number of times to repeat the node
+
+--- Constructor for RepeatNode.
+---@param args table @Table containing the arguments for the node.
+---   - name: string @Name of the Repeat node.
+---   - repeatCount: number @Number of times to repeat the node.
 ---@return RepeatNode @The created RepeatNode instance
-function RepeatNode.new(name, repeatCount)
+function RepeatNode.new(args)
     ---@class RepeatNode:DecoratorNode
-    local self = DecoratorNode.new(name)
+    local self = DecoratorNode.new(args.name)
     self.NodeType = "RepeatNode"
     local currentCount = 0
 
-    mq.Write.Trace("Creating %s: %s repeatCount: %d", self.NodeType, self.Name,repeatCount)
+    mq.Write.Trace("Creating %s: %s repeatCount: %d", self.NodeType, self.Name, args.repeatCount)
 
     function self._OnInitialize(blackboard)
         currentCount = 0
@@ -21,11 +26,11 @@ function RepeatNode.new(name, repeatCount)
     function self._Update(blackboard)
         local status = self.Child.Tick(blackboard)
         if status == NodeState.Success then
-            mq.Write.Trace("RepeatNode %s child node succeeded, incrementing counter", name, currentCount)
+            mq.Write.Trace("RepeatNode %s child node succeeded, incrementing counter", args.name, currentCount)
             currentCount = currentCount + 1
-            if currentCount >= repeatCount then
-                mq.Write.Trace("RepeatNode %s completed the specified number of repeats %d >= %d", name, currentCount,
-                    repeatCount)
+            if currentCount >= args.repeatCount then
+                mq.Write.Trace("RepeatNode %s completed the specified number of repeats %d >= %d", args.name, currentCount,
+                    args.repeatCount)
                 return NodeState.Success
             end
             return NodeState.Running

@@ -3,9 +3,10 @@ import { NodeDetails, NodeType, TreeNode } from "@/types/TreeNode.ts";
 import { hierarchy, tree } from 'd3-hierarchy';
 import { watch } from 'vue';
 
-const subTrees= {
-    "Target":'{"name":"Target","id":"node-000","type":"SelectNode","children":[{"name":"Have Target","id":"node-003","type":"ConditionNode","conditionName":"haveCorrectTarget","paramKeys":["targetId"],"children":[]},{"name":"Get Target","id":"node-001","type":"SequenceNode","children":[{"name":"Target Is Valid","id":"node-004","type":"ConditionNode","conditionName":"isValidTarget","paramKeys":["targetId","spawnType"],"children":[]},{"name":"Target","id":"node-005","type":"ActionNode","actionName":"target","paramKeys":["targetId","spawnType"],"children":[]}]}]}'
-} as Record<string,string>
+const subTrees = {
+    "Target": '{"id":"node-000","type":"SelectNode","inputs":{"name":"Target"},"children":[{"id":"node-001","type":"ConditionNode","inputs":{"name":"Have Target","conditionKey":"haveCorrectTarget","paramKeys":["targetId"]},"children":[]},{"id":"node-002","type":"SequenceNode","inputs":{"name":"Get Target"},"children":[{"id":"node-003","type":"ConditionNode","inputs":{"name":"Target Is Valid","conditionKey":"isValidTarget","paramKeys":["targetId","spawnType"]},"children":[]},{"id":"node-004","type":"TargetActionNode","inputs":{"name":"Target","targetIdKey":"targetId","targetTypeKey":"spawnType"},"children":[]}]}]}',
+    "MemSpell": '{"id":"node-000","type":"SelectNode","inputs":{"name":"Root"},"children":[{"id":"node-001","type":"SequenceNode","inputs":{"name":"Start Mem"},"children":[{"id":"node-002","type":"InvertNode","inputs":{"name":"Not"},"children":[{"id":"node-003","type":"ConditionNode","inputs":{"name":"Memorizing","conditionKey":"spellMemorizing","paramKeys":[]},"children":[]}]},{"id":"node-004","type":"InvertNode","inputs":{"name":"Not"},"children":[{"id":"node-005","type":"ConditionNode","inputs":{"name":"Memorized","conditionKey":"spellMemorized","paramKeys":["spellId"]},"children":[]}]},{"id":"node-006","type":"MemorizeSpellActionNode","inputs":{"name":"Memorize Spell","spellGemKey":"spellGem","spellIdKey":"spellId"},"children":[]},{"id":"node-007","type":"WaitNode","inputs":{"name":"Wait","time":0.1,"paramKeys":[]},"children":[]}]},{"id":"node-008","type":"SequenceNode","inputs":{"name":"WaitingForMem"},"children":[{"id":"node-009","type":"ConditionNode","inputs":{"name":"Memorizing","conditionKey":"spellMemorizing","paramKeys":[]},"children":[]},{"id":"node-010","type":"InvertNode","inputs":{"name":"Not"},"children":[{"id":"node-011","type":"ConditionNode","inputs":{"name":"Memorized","conditionKey":"spellMemorized","paramKeys":["spellId"]},"children":[]}]},{"id":"node-012","type":"WaitNode","inputs":{"name":"Wait","time":0.1,"paramKeys":[]},"children":[]}]}]}'
+} as Record<string, string>
 
 
 export const useNodeStore = defineStore({
@@ -52,18 +53,18 @@ export const useNodeStore = defineStore({
             if (this.selectedNodeId == null)
                 return;
             let nodeToDelete = this.nodes[this.selectedNodeId];
-            
+
             //Delete children
             this.deleteChildren(nodeToDelete);
 
             //Update the parent to remove this node
-            if(nodeToDelete.parentId) {
+            if (nodeToDelete.parentId) {
                 const index = this.nodes[nodeToDelete.parentId].childrenIds.indexOf(nodeToDelete.id);
                 if (index > -1) {
                     this.nodes[nodeToDelete.parentId].childrenIds.splice(index, 1);
                 }
             }
-            
+
             //delete this node
             delete this.nodes[this.selectedNodeId]
             this.selectedNodeId = null
@@ -71,21 +72,25 @@ export const useNodeStore = defineStore({
         generateTreeJson() {
             function createBTNode(node: TreeNode) {
                 let btNode = {
-                    name: node.inputs.name,
                     id: node.id,
-                    type: node.type
+                    type: node.type,
+                    inputs:{}
                 } as any
 
                 for (const inputsKey of NodeDetails[node.type].inputs) {
                     if (inputsKey.type === "string[]") {
-                        if(node.inputs[inputsKey.name]) {
-                            btNode[inputsKey.name] = node.inputs[inputsKey.name].split(',');
+                        if (node.inputs[inputsKey.name]) {
+                            if(typeof node.inputs[inputsKey.name] === "string") {
+                                btNode.inputs[inputsKey.name] = node.inputs[inputsKey.name].split(',');
+                            } else if (Array.isArray(node.inputs[inputsKey.name])) {
+                                btNode.inputs[inputsKey.name] = node.inputs[inputsKey.name]
+                            }
                         } else {
-                            btNode[inputsKey.name] = [];
+                            btNode.inputs[inputsKey.name] = [];
                         }
-                        
+
                     } else {
-                        btNode[inputsKey.name] = node.inputs[inputsKey.name]
+                        btNode.inputs[inputsKey.name] = node.inputs[inputsKey.name]
                     }
                 }
                 return btNode
@@ -115,8 +120,8 @@ export const useNodeStore = defineStore({
             rootNode.children = createChildrenNodes(this.nodes[rootNode.id], this.nodes);
             return JSON.stringify(rootNode);
         },
-        loadSubtree(treeName:string){
-            if(subTrees.hasOwnProperty(treeName))
+        loadSubtree(treeName: string) {
+            if (subTrees.hasOwnProperty(treeName))
                 this.loadTree(subTrees[treeName]);
         },
         addNode(nodeType: NodeType) {
@@ -161,9 +166,12 @@ export const useNodeStore = defineStore({
 
                 for (const inputsKey of NodeDetails[currentNode.type].inputs) {
                     if (inputsKey.type === "string[]") {
-                        currentNode.inputs[inputsKey.name] = node[inputsKey.name].join(',')
+                        if (node.inputs[inputsKey.name])
+                            currentNode.inputs[inputsKey.name] = node.inputs[inputsKey.name].join(',')
+                        else
+                            currentNode.inputs[inputsKey.name] = ""
                     } else {
-                        currentNode.inputs[inputsKey.name] = node[inputsKey.name]
+                        currentNode.inputs[inputsKey.name] = node.inputs[inputsKey.name]
                     }
                 }
                 if (parentId) {
@@ -230,7 +238,7 @@ export const useNodeStore = defineStore({
                 // @ts-ignore: D3 adds 'x' and 'y' properties dynamically
                 this.nodes[d.data.id].y = d.x + baseY;
             });
-            if(proxyRoot){
+            if (proxyRoot) {
                 delete this.nodes[proxyRoot];
             }
             return this.nodes;

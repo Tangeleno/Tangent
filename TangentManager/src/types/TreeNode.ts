@@ -33,6 +33,7 @@ type NodeInput = {
 
 
 type NodeDetails = {
+    category:NodeCategory
     description: string;
     inputs: NodeInput[];
     canHaveChildren: boolean;
@@ -46,42 +47,54 @@ export enum NodeType {
     Invert = 'InvertNode',
     Repeat = 'RepeatNode',
     Retry = 'RetryNode',
-    Action = 'ActionNode',
     Wait = 'WaitNode',
     RandomSelector = 'RandomSelector',
     Failer = 'FailerNode',
     Succeeder = 'SucceederNode',
     Loop = 'LoopNode',
-    Condition = 'ConditionNode'
+    Condition = 'ConditionNode',
+    Memorize= 'MemorizeSpellActionNode',
+    Sit = 'SitActionNode',
+    Target = 'TargetActionNode'
 }
 
 export enum Actions {
     NoOp = "NoOp",
 }
 
+export enum NodeCategory {
+    Composite = 'Composite',
+    Decorator = 'Decorator',
+    Action = 'Action',
+    Leaf = "Leaf"
+}
+
 export enum Conditions {
-    AlwaysFalse = "AlwaysFalse",
-    standing = "standing",
-    isValidTarget = "isValidTarget",
-    haveCorrectTarget = "haveCorrectTarget",
-    spellMemorized = "spellMemorized",
-    spellMemorizing = "spellMemorizing"
+    AlwaysFalse   = "AlwaysFalse",
+    standing   = "standing",
+    isValidTarget   = "isValidTarget",
+    haveCorrectTarget   = "haveCorrectTarget",
+    spellMemorized   = "spellMemorized",
+    spellMemorizing   = "spellMemorizing"
 }
 
 export const NodeDetails: Record<NodeType, NodeDetails> = {
     [NodeType.Select]: {
+        category: NodeCategory.Composite,
         description: 'Returns the first successful child or failure if all children fail',
         inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: true,
         isDecorator: false
     },
     [NodeType.Sequence]: {
+        category: NodeCategory.Composite,
         description: 'Returns success only if all children succeed in order',
         inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: true,
         isDecorator: false
     },
     [NodeType.Parallel]: {
+        category: NodeCategory.Composite,
         description: 'Runs all children simultaneously, returning success based on a success percentage',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },
@@ -100,12 +113,14 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
         isDecorator: false
     },
     [NodeType.Invert]: {
+        category: NodeCategory.Decorator,
         description: 'Inverts the result of its child',
         inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: true,
         isDecorator: true
     },
     [NodeType.Repeat]: {
+        category: NodeCategory.Decorator,
         description: 'Repeats its child the specified number of times or until failure',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
@@ -123,6 +138,7 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
         isDecorator: true
     },
     [NodeType.Retry]: {
+        category: NodeCategory.Decorator,
         description: 'Retries its child the specified number of times or until success',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
@@ -139,30 +155,8 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
         canHaveChildren: true,
         isDecorator: true
     },
-    [NodeType.Action]: {
-        description: 'The `ActionNode` is a specific node type in a Behavior Tree system. It represents an action that can be performed and encapsulates the logic required to execute it.',
-        inputs: [
-            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
-            {
-                name: 'actionName',
-                required: true,
-                display: 'Action',
-                type: 'action',
-                default: 'noop',
-                description: 'Name of the action to perform.'
-            },
-            {
-                name: 'paramKeys',
-                required: false,
-                display: 'Parameters',
-                type: 'string[]',
-                description: 'Keys used to extract the parameters from the blackboard.'
-            },
-        ],
-        canHaveChildren: false,
-        isDecorator: false
-    },
     [NodeType.Wait]: {
+        category: NodeCategory.Leaf,
         description: 'The `WaitNode` waits for a specified amount of time or until a condition is met.',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
@@ -195,11 +189,12 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
         isDecorator: false
     },
     [NodeType.Condition]: {
+        category: NodeCategory.Leaf,
         description: 'The `ConditionNode` checks the specified condition, returning successfully if the condition is true, else failure',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
             {
-                name: 'conditionName',
+                name: 'conditionKey',
                 display: 'Condition',
                 required: false,
                 type: 'condition',
@@ -218,24 +213,28 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
         isDecorator: false
     },
     [NodeType.RandomSelector]: {
+        category: NodeCategory.Composite,
         description: 'The `RandomSelector` randomly shuffles its children and then behaves like a regular selector, choosing the first child that succeeds.',
         inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: true,
         isDecorator: false
     },
     [NodeType.Failer]: {
+        category: NodeCategory.Leaf,
         description: 'The `FailerNode` always returns a failure status.',
         inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: false,
         isDecorator: false
     },
     [NodeType.Succeeder]: {
+        category: NodeCategory.Leaf,
         description: 'The `SucceederNode` always returns a success status.',
         inputs: [{ name: 'name', display: 'Name', type: 'string', required: true, description: 'The name of the node' },],
         canHaveChildren: false,
         isDecorator: false
     },
     [NodeType.Loop]: {
+        category: NodeCategory.Decorator,
         description: 'The `LoopNode` executes its child node a specified number of times.',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
@@ -250,5 +249,37 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
         ],
         canHaveChildren: true,
         isDecorator: true
+    },
+    [NodeType.Memorize]: {
+        category: NodeCategory.Action,
+        description: 'The `MemorizeSpellActionNode` memorizes a spell from the character\'s spellbook into a specific gem slot.',
+        inputs: [
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
+            { name: 'spellGemKey', display: 'Spell Gem Key', type: 'string', required: true, description: 'Key to extract the spell gem slot from the blackboard.' },
+            { name: 'spellIdKey', display: 'Spell ID Key', type: 'string', required: true, description: 'Key to extract the spell ID from the blackboard.' },
+        ],
+        canHaveChildren: false,
+        isDecorator: false
+    },
+    [NodeType.Sit]: {
+        category: NodeCategory.Action,
+        description: 'The `SitActionNode` represents an action where the character attempts to sit and returns success when sitting or failure after a specified number of attempts.',
+        inputs: [
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the SitAction node.' },
+            { name: 'maxSitAttempts', display: 'Max Sit Attempts', type: 'number', required: true, description: 'The number of attempts that should be made before returning failure.' },
+        ],
+        canHaveChildren: false,
+        isDecorator: false
+    },
+    [NodeType.Target]: {
+        category: NodeCategory.Action,
+        description: 'The `TargetActionNode` represents an action where the character attempts to target a specific entity and returns success when successfully targeted or failure if the target is invalid or not reached within a specified time.',
+        inputs: [
+            { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the TargetAction node.' },
+            { name: 'targetIdKey', display: 'Target ID Key', type: 'string', required: true, description: 'Key to extract the target ID from the blackboard.' },
+            { name: 'targetTypeKey', display: 'Target Type Key', type: 'string', required: false, description: 'Key to extract the target type from the blackboard (optional).' },
+        ],
+        canHaveChildren: false,
+        isDecorator: false
     }
 } as Record<NodeType, NodeDetails>;

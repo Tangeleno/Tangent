@@ -1,19 +1,23 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local DecoratorNode = require "libs.behavior.nodes.decorator"
----Repeats the child node the specified number of times, or until success
+
+--- Repeats the child node the specified number of times, or until success.
 ---@class RetryNode
 local RetryNode = {}
----@param name string @Name of the Retry node
----@param repeatCount number @Number of times to retry the node
+
+--- Constructor for RetryNode.
+---@param args table @Table containing the arguments for the node.
+---   - name: string @Name of the Retry node.
+---   - repeatCount: number @Number of times to retry the node.
 ---@return RetryNode @The created RetryNode instance
-function RetryNode.new(name, repeatCount)
+function RetryNode.new(args)
     ---@class RetryNode:DecoratorNode
-    local self = DecoratorNode.new(name)
+    local self = DecoratorNode.new(args.name)
     self.NodeType = "RetryNode"
     local currentCount = 0
 
-    mq.Write.Trace("Creating %s: %s repeatCount: %d", self.NodeType, self.Name,repeatCount)
+    mq.Write.Trace("Creating %s: %s repeatCount: %d", self.NodeType, self.Name, args.repeatCount)
 
     function self._OnInitialize(blackboard)
         currentCount = 0
@@ -22,10 +26,10 @@ function RetryNode.new(name, repeatCount)
     function self._Update(blackboard)
         local status = self.Child.Tick(blackboard)
         if status == NodeState.Failure then
-            mq.Write.Trace("RetryNode %s child node failed, incrementing counter", name, currentCount)
+            mq.Write.Trace("RetryNode %s child node failed, incrementing counter", args.name, currentCount)
             currentCount = currentCount + 1
-            if currentCount >= repeatCount then
-                mq.Write.Trace("RepeatNode %s giving up %d >= %d", name, currentCount, repeatCount)
+            if currentCount >= args.repeatCount then
+                mq.Write.Trace("RepeatNode %s giving up %d >= %d", args.name, currentCount, args.repeatCount)
                 status = NodeState.Failure
             else
                 status = NodeState.Running

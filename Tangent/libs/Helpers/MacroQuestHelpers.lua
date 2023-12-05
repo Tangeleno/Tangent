@@ -1,3 +1,5 @@
+
+
 require "libs.Helpers.StringFunctions"
 require "libs.Helpers.MathFunctions"
 ---@class Mq
@@ -39,7 +41,6 @@ function mq.IsValidTarget(spawnSearch, type)
     end
     return false
 end
-
 
 
 mq.CombatStates = {

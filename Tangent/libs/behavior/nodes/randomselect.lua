@@ -1,15 +1,22 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local SelectNode = require "libs.behavior.nodes.select"
+
+--- Creates a node that selects a random child to execute.
 ---@class RandomSelector
 local RandomSelector = {}
----@param name string @Name of the RandomSelector node.
-function RandomSelector.new(name)
+
+--- Constructor for RandomSelector.
+---@param args table @Table containing the arguments for the node.
+---   - name: string @Name of the RandomSelector node.
+---@return RandomSelector @The created RandomSelector instance
+function RandomSelector.new(args)
     ---@class RandomSelector:SelectNode
-    local self = SelectNode.new(name)
+    local self = SelectNode.new(args.name)
     self.NodeType = "RandomSelector"
 
-    mq.Write.Trace("Creating %s: %s", self.NodeType, self.Name)
+    mq.Write.Trace("Creating %s: %s", self.NodeType, args.name)
+
     function self._OnInitialize(blackboard)
         -- Randomly shuffle the children
         local shuffled = {}

@@ -7,7 +7,7 @@
   import { nodeStore } from '@/stores';
   import TreeNodeEditor from '@/components/TreeNodeEditor.vue';
   import ConfirmationDialog from '@/components/ConfirmationDialog.vue';
-  import { NodeType } from '@/types/TreeNode';
+  import { NodeType, NodeCategory, NodeDetails } from '@/types/TreeNode';
 
   const containerRef = ref<HTMLDivElement | null>(null);
   const fileInput = ref<HTMLInputElement | null>(null);
@@ -92,14 +92,17 @@
 
   function copyJsonClicked() {
     const treeJson = nodeStore.generateTreeJson();
-    navigator.clipboard.writeText(treeJson).then(function() {
-            console.log('Text successfully copied to clipboard');
-        }).catch(function(err) {
-            console.error('Could not copy text to clipboard: ', err);
-        });
+    navigator.clipboard
+      .writeText(treeJson)
+      .then(function () {
+        console.log('Text successfully copied to clipboard');
+      })
+      .catch(function (err) {
+        console.error('Could not copy text to clipboard: ', err);
+      });
   }
 
-  function loadSubtreeClicked(treeName:string){
+  function loadSubtreeClicked(treeName: string) {
     const emptyNodes = Object.keys(nodeStore.nodes).length === 0;
     nodeStore.loadSubtree(treeName);
     if (emptyNodes) {
@@ -111,6 +114,11 @@
     if (event.key === 'Delete') {
       deleteSelected();
     }
+  }
+  function getFilteredNodes(category: NodeCategory): NodeType[] {
+    return Object.keys(NodeDetails)
+      .filter((key): key is NodeType => NodeDetails[key as NodeType].category === category)
+      .map((key) => key as NodeType);
   }
 
   function createNode(nodeType: NodeType) {
@@ -156,8 +164,11 @@
             <text-menu-item>
               Add
               <template #children>
-                <text-menu-item v-for="nodeType in NodeType" @item-clicked="createNode" :action="nodeType">
-                  {{ nodeType }}
+                <text-menu-item v-for="category in NodeCategory">
+                  {{ category }}
+                  <template #children>
+                    <text-menu-item v-for="nodeType in getFilteredNodes(category)" @item-clicked="createNode" :action="nodeType">{{nodeType}}</text-menu-item>
+                  </template>
                 </text-menu-item>
               </template>
             </text-menu-item>
