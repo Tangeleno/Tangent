@@ -8,19 +8,19 @@ local Node = require "libs.behavior.nodes.node"
 ---@field positionKey string @Key to extract the Range representing the degrees of the arc (see mq.Positioning)
 ---@field distanceKey string @Key to extra the Range representing the minimum and maximum distance from the destination
 
----@class MoveToCoordinatesNodeNode
-local MoveToCoordinatesNode = {}
+---@class MoveToNodeNode
+local MoveToNode = {}
 
---- Constructor for MoveToCoordinatesNode.
+--- Constructor for MoveToNode.
 ---@param args MoveToNodeArgs @Table containing the arguments for the node.
 ---   - name: string @Name of the SitAction node.
 ---   - coordinatesKey: string @A key to a blackboard table containing x,y,z coordinates either positionKey or spawnIdKey are required
 ---   - spawnIdKey: string @A key to a blackboard value containing a spawn Id to move to either positionKey or spawnIdKey are required
 ---   - positionKey: string @A key to a blackboard value containing a Range {Min,Max} in degrees for where to position in relation to the spawn. Only used if spawnIdKey is provided default 0,359
 ---   - distanceKey: string @A key to a blackboard value containing a Range {Min,Max} distance values. used to determine when the point is reached. default 5,15
----@return MoveToCoordinatesNode @The created MoveToCoordinatesNode instance
-function MoveToCoordinatesNode.new(args)
-    ---@class MoveToCoordinatesNode:Node
+---@return MoveToNode @The created MoveToNode instance
+function MoveToNode.new(args)
+    ---@class MoveToNode:Node
     local self = Node.new(args.name)
     local navString = "loc %f %f %f"
     local spawn = mq.TLO.Spawn
@@ -84,4 +84,4 @@ function MoveToCoordinatesNode.new(args)
     return self
 end
 
-return MoveToCoordinatesNode
+return MoveToNode
