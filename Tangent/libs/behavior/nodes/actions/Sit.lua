@@ -2,19 +2,19 @@ local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local Node = require "libs.behavior.nodes.node"
 
----@class SitActionNode
-local SitActionNode = {}
+---@class SitNode
+local SitNode = {}
 
---- Constructor for SitActionNode.
+--- Constructor for Sit.
 ---@param args table @Table containing the arguments for the node.
 ---   - name: string @Name of the SitAction node.
 ---   - maxSitAttempts: number @The number of attempts that should be made before returning failure.
----@return SitActionNode @The created SitActionNode instance
-function SitActionNode.new(args)
-    ---@class SitActionNode:Node
+---@return SitNode @The created Sit instance
+function SitNode.new(args)
+    ---@class SitNode:Node
     local self = Node.new(args.name)
     args.maxSitAttempts = 10
-    self.NodeType = "SitActionNode"
+    self.NodeType = "Sit"
     self.sitStarted = false
     self.sitTimer = 0
     self.sitAttempts = 0
@@ -49,4 +49,4 @@ function SitActionNode.new(args)
     return self
 end
 
-return SitActionNode
+return SitNode

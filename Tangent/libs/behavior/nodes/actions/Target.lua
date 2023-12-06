@@ -2,23 +2,23 @@ local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local Node = require "libs.behavior.nodes.node"
 
----@class TargetActionNode
-local TargetActionNode = {}
+---@class TargetNode
+local TargetNode = {}
 
---- Constructor for TargetActionNode.
+--- Constructor for TargetNode.
 ---@param args table @Table containing the arguments for the node.
 ---   - name: string @Name of the TargetAction node.
 ---   - targetIdKey: string @Key to extract the target id from the blackboard.
 ---   - targetTypeKey: string @Key to extract the target type from the blackboard (optional).
----@return TargetActionNode @The created TargetActionNode instance
-function TargetActionNode.new(args)
+---@return TargetNode @The created TargetNode instance
+function TargetNode.new(args)
     local name = args.name
     local targetIdKey = args.targetIdKey
     local targetTypeKey = args.targetTypeKey
 
-    ---@class TargetActionNode:Node
+    ---@class TargetNode:Node
     local self = Node.new(name)
-    self.NodeType = "TargetActionNode"
+    self.NodeType = "TargetNode"
     mq.Write.Trace("Creating %s: %s with targetIdKey %s, targetTypeKey %s", self.NodeType, name, targetIdKey, targetTypeKey or "nil")
 
     self.targetStarted = false
@@ -65,4 +65,4 @@ function TargetActionNode.new(args)
     return self
 end
 
-return TargetActionNode
+return TargetNode

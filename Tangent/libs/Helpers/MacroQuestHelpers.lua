@@ -1,5 +1,3 @@
-
-
 require "libs.Helpers.StringFunctions"
 require "libs.Helpers.MathFunctions"
 ---@class Mq
@@ -9,7 +7,7 @@ local mq = nil;
 function GenerateMQ()
     local _mq = {
         TLO = {
-            Me={}
+            Me = {}
         }
     }
     return _mq;
@@ -41,7 +39,6 @@ function mq.IsValidTarget(spawnSearch, type)
     end
     return false
 end
-
 
 mq.CombatStates = {
     Unknown = 0,
@@ -129,41 +126,59 @@ function mq.InPosition(spawn, position)
     return true
 end
 
----@class ArcValue
----@field MinArc number
----@field MaxArc number
+---Gets x,y,z coordinates for the provided spawn that is within the provided arc
+---@param spawn spawn
+---@param arcRange Range
+---@param distanceRange Range
+function mq.GetPointInArc(spawn, arcRange, distanceRange)
+    if not arcRange then
+        arcRange = mq.Positioning.Any
+    end
+    if not distanceRange then
+        distanceRange = { Min = 1, Max = spawn.MaxRangeTo() }
+    end
+    if spawn then
+        return math.PointInArc(spawn.X(), spawn.Y(), spawn.Heading.Degrees(), distanceRange.Min, distanceRange.Max,
+            arcRange.Min, arcRange.Max)
+    end
+    return nil
+end
+
+---@class Range
+---@field Min number
+---@field Max number
 
 ---@class ArcValues
----@field Front ArcValue
----@field NotFront ArcValue
----@field Left ArcValue
----@field Right ArcValue
----@field Behind ArcValue
----@field Any ArcValue
+---@field Front Range
+---@field NotFront Range
+---@field Left Range
+---@field Right Range
+---@field Behind Range
+---@field Any Range
 mq.Positioning = {}
 mq.Positioning.Front = {
-    MinArc = -10,
-    MaxArc = 10
+    Min = -10,
+    Max = 10
 }
 mq.Positioning.NotFront = {
-    MinArc = 60,
-    MaxArc = 300
+    Min = 60,
+    Max = 300
 }
 mq.Positioning.Left = {
-    MinArc = 240,
-    MaxArc = 300
+    Min = 240,
+    Max = 300
 }
 mq.Positioning.Right = {
-    MinArc = 60,
-    MaxArc = 120
+    Min = 60,
+    Max = 120
 }
 mq.Positioning.Behind = {
-    MinArc = 150,
-    MaxArc = 210
+    Min = 150,
+    Max = 210
 }
 mq.Positioning.Any = {
-    MinArc = 0,
-    MaxArc = 360
+    Min = 0,
+    Max = 359
 }
 
 --Write Code shamelessly stolen from Knightly

@@ -53,9 +53,10 @@ export enum NodeType {
     Succeeder = 'SucceederNode',
     Loop = 'LoopNode',
     Condition = 'ConditionNode',
-    Memorize= 'MemorizeSpellActionNode',
-    Sit = 'SitActionNode',
-    Target = 'TargetActionNode'
+    Memorize= 'MemorizeSpellNode',
+    Sit = 'SitNode',
+    Target = 'TargetNode',
+    MoveTo = "MoveToNode"
 }
 
 export enum Actions {
@@ -252,7 +253,7 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     },
     [NodeType.Memorize]: {
         category: NodeCategory.Action,
-        description: 'The `MemorizeSpellActionNode` memorizes a spell from the character\'s spellbook into a specific gem slot.',
+        description: 'The `MemorizeSpellNode` memorizes a spell from the character\'s spellbook into a specific gem slot.',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the node.' },
             { name: 'spellGemKey', display: 'Spell Gem Key', type: 'string', required: true, description: 'Key to extract the spell gem slot from the blackboard.' },
@@ -263,7 +264,7 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     },
     [NodeType.Sit]: {
         category: NodeCategory.Action,
-        description: 'The `SitActionNode` represents an action where the character attempts to sit and returns success when sitting or failure after a specified number of attempts.',
+        description: 'The `SitNode` represents an action where the character attempts to sit and returns success when sitting or failure after a specified number of attempts.',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the SitAction node.' },
             { name: 'maxSitAttempts', display: 'Max Sit Attempts', type: 'number', required: true, description: 'The number of attempts that should be made before returning failure.' },
@@ -273,7 +274,7 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
     },
     [NodeType.Target]: {
         category: NodeCategory.Action,
-        description: 'The `TargetActionNode` represents an action where the character attempts to target a specific entity and returns success when successfully targeted or failure if the target is invalid or not reached within a specified time.',
+        description: 'The `TargetNode` represents an action where the character attempts to target a specific entity and returns success when successfully targeted or failure if the target is invalid or not reached within a specified time.',
         inputs: [
             { name: 'name', display: 'Name', type: 'string', required: true, description: 'Name of the TargetAction node.' },
             { name: 'targetIdKey', display: 'Target ID Key', type: 'string', required: true, description: 'Key to extract the target ID from the blackboard.' },
@@ -282,4 +283,5 @@ export const NodeDetails: Record<NodeType, NodeDetails> = {
         canHaveChildren: false,
         isDecorator: false
     }
+    
 } as Record<NodeType, NodeDetails>;

@@ -3,25 +3,25 @@ local NodeState = require "libs.behavior.NodeState"
 local Node = require "libs.behavior.nodes.node"
 local conditions = require "libs.behavior.conditions"
 
----@class MemorizeSpellActionNode
-local MemorizeSpellActionNode = {}
---- Constructor for MemorizeSpellActionNode.
+---@class MemorizeSpellNode
+local MemorizeSpellNode = {}
+--- Constructor for MemorizeSpell.
 ---@param args table @Table containing the arguments for the node.
 ---   - name: string @Name of the MemorizeSpellAction node.
 ---   - spellGemKey: string @Key to extract the spell gem slot from the blackboard.
 ---   - spellIdKey: string @Key to extract the spell ID from the blackboard.
----@return MemorizeSpellActionNode @The created MemorizeSpellActionNode instance
-function MemorizeSpellActionNode.new(args)
-    mq.Write.Trace("Creating MemorizeSpellActionNode: %s", args.name)
-    ---@class MemorizeSpellActionNode:Node
+---@return MemorizeSpellNode @The created MemorizeSpell instance
+function MemorizeSpellNode.new(args)
+    mq.Write.Trace("Creating MemorizeSpellNode: %s", args.name)
+    ---@class MemorizeSpellNode:Node
     local self = Node.new(args.name)
-    self.NodeType = "MemorizeSpellActionNode"
+    self.NodeType = "MemorizeSpellNode"
 
     self.memStarted = false
     self.memWaitTimer = 0
 
     function self._OnInitialize(blackboard)
-        mq.Write.Trace("Initializing MemorizeSpellActionNode: ", args.name)
+        mq.Write.Trace("Initializing MemorizeSpellNode: ", args.name)
         self.memStarted = false
         self.memWaitTimer = 0
         self.spellGem = blackboard[args.spellGemKey]
@@ -62,4 +62,4 @@ function MemorizeSpellActionNode.new(args)
     return self
 end
 
-return MemorizeSpellActionNode
+return MemorizeSpell

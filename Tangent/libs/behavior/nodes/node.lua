@@ -1,5 +1,9 @@
 local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
+
+---@class NodeArgs
+---@field name string
+
 ---@class Node
 local Node = {
     States = NodeState
@@ -40,7 +44,11 @@ function Node.new(name)
         mq.Write.Debug("Tick entered for %s %s", self.NodeType, self.Name)
         if self.State ~= NodeState.Running then
             mq.Write.Trace("Initializing Node %s %s", self.NodeType, self.Name)
-            self._OnInitialize(blackboard)
+            local initalizeState = self._OnInitialize(blackboard)
+            if initalizeState == NodeState.Invalid then
+                self.State = NodeState.Invalid
+                return self.State
+            end
         end
         self.State = self._Update(blackboard)
         mq.Write.Debug("%s %s returned the status %s", self.NodeType, self.Name, NodeState[self.State])
