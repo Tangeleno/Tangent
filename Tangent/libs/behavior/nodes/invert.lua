@@ -2,31 +2,41 @@ local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local DecoratorNode = require "libs.behavior.nodes.decorator"
 
----@class InvertNode
+
+---@class InvertNode : DecoratorNode
 local InvertNode = {}
 
 --- Constructor for InvertNode.
----@param args table @Table containing the arguments for the node.
----   - name: string @Name of the Invert node.
+---@param args NodeArgs @Table containing the arguments for the node.
 ---@return InvertNode @The created InvertNode instance
 function InvertNode.new(args)
-    ---@class InvertNode:DecoratorNode
-    local self = DecoratorNode.new(args.name)
+    ---@class InvertNode : DecoratorNode
+    local self = DecoratorNode.new(args)
     self.NodeType = "InvertNode"
-    mq.Write.Trace("Creating %s: %s", self.NodeType, self.Name)
+    mq.Write.Trace("%s: Creating InvertNode named '%s'", self.NodeType, args.name)
 
+    --- Update function called each tick.
+    ---@param blackboard table @The blackboard being used by the behavior tree.
+    ---@return NodeState @The state of the node after processing.
     function self._Update(blackboard)
         if not self.Child then
-            mq.Write.Warn("No child found in InvertNode: %s", args.name)
+            mq.Write.Warn("%s '%s': No child node is assigned", self.NodeType, self.Name)
             return NodeState.Failure
         end
+
         local result = self.Child.Tick(blackboard)
+
+        -- Invert the success and failure states
         if result == NodeState.Success then
+            mq.Write.Debug("%s '%s': Child succeeded, inverting to Failure", self.NodeType, self.Name)
             return NodeState.Failure
-        end
-        if result == NodeState.Failure then
+        elseif result == NodeState.Failure then
+            mq.Write.Debug("%s '%s': Child failed, inverting to Success", self.NodeType, self.Name)
             return NodeState.Success
         end
+
+        -- If the child is still running or invalid, return the same state
+        mq.Write.Debug("%s '%s': Child state is %s, returning as is", self.NodeType, self.Name, NodeState[result])
         return result
     end
 

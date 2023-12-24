@@ -26,10 +26,13 @@ function SequenceNode.new(args)
         for i = self.CurrentChildIndex, #self.Children do
             self.CurrentChildIndex = i  -- Update CurrentChildIndex at the start of the loop
             local child = self.Children[i]
-            local status = child.Tick(blackboard)
-
+            child.Tick(blackboard)
+            if child.State == NodeState.Invalid then
+                mq.Write.Trace("%s: %s received Invalid state from a child, terminating", self.NodeType, self.Name)
+                return NodeState.Invalid
+            end
             if child.IsRunning() or child.IsFailure() then
-                return status
+                return child.State
             end
         end
 

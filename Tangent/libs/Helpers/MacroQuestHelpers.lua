@@ -89,6 +89,69 @@ mq.Classes = {
     Banner = 254,
 }
 
+
+---@class CastResult:number
+---@class CastResults
+---@field Success CastResult 
+---@field Started CastResult 
+---@field Collapsed CastResult 
+---@field NoLOS CastResult 
+---@field NoComponent CastResult 
+---@field Distracted CastResult 
+---@field Silenced CastResult 
+---@field Immune CastResult 
+---@field Interrupted CastResult 
+---@field Fizzled CastResult 
+---@field BadTarget CastResult 
+---@field NotReady CastResult 
+---@field NoMana CastResult 
+---@field OutOfRange CastResult 
+---@field OutDoors CastResult 
+---@field Resisted CastResult 
+---@field Standing CastResult 
+---@field Stunned CastResult 
+---@field Blocked CastResult 
+mq.CastResults = {
+    Success = 0,
+    Started = 1,
+    Collapsed =2 ,
+    NoLOS = 3,
+    NoComponent = 4,
+    Distracted = 5,
+    Silenced = 6,
+    Immune = 7,
+    Interrupted = 8,
+    Fizzled = 9,
+    BadTarget =10 ,
+    NotReady = 11,
+    NoMana = 12,
+    OutOfRange = 13,
+    OutDoors = 14,
+    Resisted = 15,
+    Standing = 16,
+    Stunned = 17,
+    Blocked = 18,
+    [0] = "Success",
+    [1] = "Started",
+    [2] = "Collapsed",
+    [3] = "NoLOS",
+    [4] = "NoComponent",
+    [5] = "Distracted",
+    [6] = "Silenced",
+    [7] = "Immune",
+    [8] = "Interrupted",
+    [9] = "Fizzled",
+    [10] = "BadTarget",
+    [11] = "NotReady",
+    [12] = "NoMana",
+    [13] = "OutOfRange",
+    [14] = "OutDoors",
+    [15] = "Resisted",
+    [16] = "Standing",
+    [17] = "Stunned",
+    [18] = "Blocked",
+}
+
 ---@param windowName string
 ---@param buttonName string
 ---@param leftOrRight string @left|right
@@ -119,7 +182,7 @@ end
 
 ---Is the character in the correct position relative to the provided spawn
 ---@param spawn spawn
----@param position ArcValue
+---@param position Range
 ---@return boolean
 function mq.InPosition(spawn, position)
     --TODO: make this work
@@ -128,8 +191,9 @@ end
 
 ---Gets x,y,z coordinates for the provided spawn that is within the provided arc
 ---@param spawn spawn
----@param arcRange Range
----@param distanceRange Range
+---@param arcRange? Range
+---@param distanceRange? Range
+---@return Coordinates|nil
 function mq.GetPointInArc(spawn, arcRange, distanceRange)
     if not arcRange then
         arcRange = mq.Positioning.Any
@@ -138,47 +202,39 @@ function mq.GetPointInArc(spawn, arcRange, distanceRange)
         distanceRange = { Min = 1, Max = spawn.MaxRangeTo() }
     end
     if spawn then
-        return math.PointInArc(spawn.X(), spawn.Y(), spawn.Heading.Degrees(), distanceRange.Min, distanceRange.Max,
+        local x, y = math.PointInArc(spawn.X(), spawn.Y(), spawn.Heading.Degrees(), distanceRange.Min, distanceRange.Max,
             arcRange.Min, arcRange.Max)
+        return { X = x, Y = y, Z = spawn.Z() }
     end
     return nil
 end
 
----@class Range
----@field Min number
----@field Max number
-
----@class ArcValues
----@field Front Range
----@field NotFront Range
----@field Left Range
----@field Right Range
----@field Behind Range
----@field Any Range
-mq.Positioning = {}
-mq.Positioning.Front = {
-    Min = -10,
-    Max = 10
-}
-mq.Positioning.NotFront = {
-    Min = 60,
-    Max = 300
-}
-mq.Positioning.Left = {
-    Min = 240,
-    Max = 300
-}
-mq.Positioning.Right = {
-    Min = 60,
-    Max = 120
-}
-mq.Positioning.Behind = {
-    Min = 150,
-    Max = 210
-}
-mq.Positioning.Any = {
-    Min = 0,
-    Max = 359
+---@type ArcValues
+mq.Positioning = {
+    Front = {
+        Min = -10,
+        Max = 10
+    },
+    NotFront = {
+        Min = 60,
+        Max = 300
+    },
+    Left = {
+        Min = 240,
+        Max = 300
+    },
+    Right = {
+        Min = 60,
+        Max = 120
+    },
+    Behind = {
+        Min = 150,
+        Max = 210
+    },
+    Any = {
+        Min = 0,
+        Max = 359
+    }
 }
 
 --Write Code shamelessly stolen from Knightly
@@ -197,20 +253,6 @@ local function GetCallerString(logLevel)
     end
     return string.format('(%s) ', callString)
 end
-
----@class LogLevel
----@field Level number
----@field MQColor string
----@field Abbreviation string
-
----@class LogLevels
----@field Trace LogLevel
----@field Debug LogLevel
----@field Info LogLevel
----@field Warn LogLevel
----@field Error LogLevel
----@field Fatal LogLevel
----@field Help LogLevel
 
 ---@class Write
 mq.Write = {

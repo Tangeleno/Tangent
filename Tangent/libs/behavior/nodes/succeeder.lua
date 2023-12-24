@@ -6,13 +6,12 @@ local Node = require "libs.behavior.nodes.node"
 ---@class SucceederNode
 local SucceederNode = {}
 
---- Constructor for SucceederNode.
----@param args table @Table containing the arguments for the node.
----   - name: string @Name of the Succeeder node.
----@return SucceederNode @The created SucceederNode instance
+--- Creates a node that always succeeds.
+---@param args NodeArgs @Table containing the arguments for the node.
+---@return SucceederNode @The created SucceederNode instancece
 function SucceederNode.new(args)
     ---@class SucceederNode:Node
-    local self = Node.new(args.name)
+    local self = Node.new(args)
     self.NodeType = "SucceederNode"
     mq.Write.Trace("Creating %s: %s", self.NodeType, args.name)
 

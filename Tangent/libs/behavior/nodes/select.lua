@@ -7,12 +7,11 @@ local CompositeNode = require "libs.behavior.nodes.composite"
 local SelectNode = {}
 
 --- Constructor for SelectNode.
----@param args table @Table containing the arguments for the node.
----   - name: string @Name of the Select node.
+---@param args NodeArgs @Table containing the arguments for the node.
 ---@return SelectNode @The created SelectNode instance
 function SelectNode.new(args)
     ---@class SelectNode:CompositeNode
-    local self = CompositeNode.new(args.name)
+    local self = CompositeNode.new(args)
     self.NodeType = "SelectNode"
     self.CurrentChildIndex = 1
     mq.Write.Trace("Creating %s: %s", self.NodeType, args.name)
@@ -24,15 +23,17 @@ function SelectNode.new(args)
     ---@return NodeState
     function self._Update(blackboard)
         for i = self.CurrentChildIndex, #self.Children do
-            self.CurrentChildIndex = i  -- Update CurrentChildIndex at the start of the loop
+            self.CurrentChildIndex = i -- Update CurrentChildIndex at the start of the loop
             local child = self.Children[i]
-            local status = child.Tick(blackboard)
-
+            child.Tick(blackboard)
+            if child.State == NodeState.Invalid then
+                mq.Write.Trace("%s: %s received Invalid state from a child, terminating", self.NodeType, self.Name)
+                return NodeState.Invalid
+            end
             if child.IsRunning() or child.IsSuccess() then
-                return status
+                return child.State
             end
         end
-
         -- If all children are ticked and none are successful, return Failure
         return NodeState.Failure
     end

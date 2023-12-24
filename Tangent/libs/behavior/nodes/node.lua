@@ -9,82 +9,86 @@ local Node = {
     States = NodeState
 }
 
----@param name string @Name of the node
+--- Constructor for Node.
+---@param args NodeArgs @Arguments for the node.
 ---@return Node @The created Node instance
-function Node.new(name)
+function Node.new(args)
     ---@class Node
     local self = {
-        Name = name,
+        Name = args.name,
         ---@type NodeState
         State = NodeState.Invalid,
-        NodeType = "Unknown"
+        NodeType = "BaseNode"
     }
-    --this is our true update function, this is is called by the Tick function to handle any actual state change.
-    ---Do not call directly, this function is called by Tick()
-    ---@protected
-    ---@return NodeState
+    mq.Write.Trace("%s: Creating Node named '%s'", self.NodeType, self.Name)
+
+    --- Protected update function called by Tick.
+    ---@param blackboard table @The blackboard being used by the behavior tree.
+    ---@return NodeState @The state of the node after processing.
     function self._Update(blackboard)
         return NodeState.Invalid
     end
 
-    --Cleanup function, this is called once the node is no longer running to clean up any variables
-    ---Do not call directly, this is called automatically by Tick()
-    ---@protected
+    --- Protected cleanup function, called when the node is terminated.
+    ---@param blackboard table @The blackboard being used by the behavior tree.
     function self._OnTerminate(blackboard)
+        -- Override in derived classes for cleanup.
     end
 
-    --Initialization function, called before the node is updated for the first time after not being in the 'Running' state
-    ---@protected
+    --- Protected initialization function, called before the node's first update after not being in the 'Running' state.
+    ---@param blackboard table @The blackboard being used by the behavior tree.
     function self._OnInitialize(blackboard)
+        -- Override in derived classes for initialization.
     end
 
-    ---@param blackboard table @A table that contains shared data for the behavior tree, typically used for storing and retrieving values across different nodes.
-    ---@return NodeState @Returns the state of the node after the tick operation, which can be one of the following values: Success, Failure, Running, or Invalid.
+    --- Tick function called each update cycle.
+    ---@param blackboard table @The blackboard being used by the behavior tree.
+    ---@return NodeState @The state of the node after the tick operation.
     function self.Tick(blackboard)
-        mq.Write.Debug("Tick entered for %s %s", self.NodeType, self.Name)
+        mq.Write.Trace("%s '%s': Tick entered", self.NodeType, self.Name)
         if self.State ~= NodeState.Running then
-            mq.Write.Trace("Initializing Node %s %s", self.NodeType, self.Name)
-            local initalizeState = self._OnInitialize(blackboard)
-            if initalizeState == NodeState.Invalid then
-                self.State = NodeState.Invalid
-                return self.State
-            end
+            mq.Write.Trace("%s '%s': Initializing", self.NodeType, self.Name)
+            self.State = self._OnInitialize(blackboard) or self.State
         end
+
+        mq.Write.Debug("%s: Updating %s", self.Name, self.NodeType)
         self.State = self._Update(blackboard)
-        mq.Write.Debug("%s %s returned the status %s", self.NodeType, self.Name, NodeState[self.State])
+        mq.Write.Trace("%s '%s': Update returned status '%s'", self.NodeType, self.Name, NodeState[self.State])
+
         if self.State ~= NodeState.Running then
-            mq.Write.Trace("Terminating Node %s %s", self.NodeType, self.Name)
+            mq.Write.Trace("%s '%s': Terminating", self.NodeType, self.Name)
             self._OnTerminate(blackboard)
         end
         return self.State
     end
 
-    function self.Abort()
-        mq.Write.Trace("Aborting Node %s", self.Name)
-        self._OnTerminate()
+    --- Aborts the node's execution.
+    ---@param blackboard table @The blackboard being used by the behavior tree.
+    function self.Abort(blackboard)
+        mq.Write.Trace("%s '%s': Aborting", self.NodeType, self.Name)
+        self._OnTerminate(blackboard)
         self.State = NodeState.Aborted
     end
 
-    ---Returns true if the node is in a terminated state; otherwise, false.
+    --- Returns true if the node is in a terminated state; otherwise, false.
     ---@return boolean
     function self.IsTerminated()
         return self.State == NodeState.Success or self.State == NodeState.Failure or self.State == NodeState.Aborted
     end
 
-    ---Returns true if the node is in a success state; otherwise, false.
+    --- Returns true if the node is in a success state; otherwise, false.
     ---@return boolean
     function self.IsSuccess()
         return self.State == NodeState.Success
     end
 
-    ---Returns true if the node is in a failure state; otherwise, false.
+    --- Returns true if the node is in a failure state; otherwise, false.
     ---@return boolean
     function self.IsFailure()
-        return self.State == NodeState.Failure or self.State == NodeState.Aborted or
-            self.State == NodeState.Invalid
+        return self.State == NodeState.Failure or self.State == NodeState.Aborted or self.State == NodeState.Invalid
     end
 
-    ---Returns true if the node is in a running state; otherwise, false.
+    --- Returns true if the node is in a running state; otherwise, false.
     ---@return boolean
     function self.IsRunning()
         return self.State == NodeState.Running
@@ -92,4 +96,5 @@ function Node.new(name)
 
     return self
 end
+
 return Node

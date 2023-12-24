@@ -1,0 +1,82 @@
+[Sun Dec 10 10:56:49 2023]00001:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\default_spellbook01.tga" (not found)
+
+[Sun Dec 10 10:56:49 2023]00002:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\default_spellbook02.tga" (not found)
+
+[Sun Dec 10 10:56:49 2023]00003:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\default_spellbook03.tga" (not found)
+
+[Sun Dec 10 10:56:49 2023]00004:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\default_spellbook04.tga" (not found)
+
+[Sun Dec 10 11:00:33 2023]00005:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\TargetBox.tga" (not found)
+
+[Sun Dec 10 11:33:15 2023]00001:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\cart.tga" (not found)
+
+[Sun Dec 10 11:33:15 2023]00002:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\map_icon.tga" (not found)
+
+[Tue Dec 12 14:08:39 2023]00000:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\cart.tga" (not found)
+
+[Tue Dec 12 14:08:39 2023]00001:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\map_icon.tga" (not found)
+
+[Tue Dec 12 14:17:09 2023]00002:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunSet.dds" (not found)
+
+[Tue Dec 12 14:17:52 2023]00003:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-MoonRise.dds" (not found)
+
+[Tue Dec 12 14:21:47 2023]00004:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunDown.dds" (not found)
+
+[Tue Dec 12 14:57:07 2023]00005:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunRise.dds" (not found)
+
+[Tue Dec 12 19:44:20 2023]00000:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunRise.dds" (not found)
+
+[Tue Dec 12 20:17:05 2023]00001:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunSet.dds" (not found)
+
+[Thu Dec 21 06:42:10 2023]00000:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-MoonRise.dds" (not found)
+
+[Thu Dec 21 06:44:40 2023]00001:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunRise.dds" (not found)
+
+[Thu Dec 21 07:17:26 2023]00002:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunSet.dds" (not found)
+
+[Fri Dec 22 13:17:30 2023]00000:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunSet.dds" (not found)
+
+[Fri Dec 22 13:17:43 2023]00001:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\cleric02.tga" (not found)
+
+[Fri Dec 22 13:18:12 2023]00002:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-MoonRise.dds" (not found)
+
+[Fri Dec 22 13:21:47 2023]00003:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunDown.dds" (not found)
+
+[Fri Dec 22 13:57:23 2023]00004:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunRise.dds" (not found)
+
+[Fri Dec 22 18:05:04 2023]00001:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\cart.tga" (not found)
+
+[Fri Dec 22 18:05:04 2023]00002:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\map_icon.tga" (not found)
+
+[Fri Dec 22 18:05:28 2023]00003:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunSet.dds" (not found)
+
+[Fri Dec 22 18:06:12 2023]00004:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-MoonRise.dds" (not found)
+
+[Fri Dec 22 18:09:51 2023]00005:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunDown.dds" (not found)
+
+[Fri Dec 22 18:12:40 2023]00006:ResourceManager::CreateTexture(): unable to load "atlas\Atlas_bkg_256.tga" (not found)
+
+[Fri Dec 22 18:12:40 2023]00007:ResourceManager::CreateTexture(): unable to load "UIFiles\Default\scrollbar_Hgutter.tga" (not found)
+
+[Fri Dec 22 18:12:40 2023]00008:ResourceManager::CreateTexture(): unable to load "atlas\Atlas00.tga" (not found)
+
+[Fri Dec 22 18:12:40 2023]00009:ResourceManager::CreateTexture(): unable to load "atlas\Atlas01.tga" (not found)
+
+[Fri Dec 22 18:12:40 2023]00010:ResourceManager::CreateTexture(): unable to load "atlas\Atlas02.tga" (not found)
+
+[Fri Dec 22 18:12:40 2023]00011:ResourceManager::CreateTexture(): unable to load "atlas\Atlas03.tga" (not found)
+
+[Fri Dec 22 18:12:40 2023]00012:ResourceManager::CreateTexture(): unable to load "atlas\Atlas04.tga" (not found)
+
+[Fri Dec 22 18:12:40 2023]00013:ResourceManager::CreateTexture(): unable to load "atlas\Atlas05.tga" (not found)
+
+[Fri Dec 22 21:41:24 2023]00000:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunSet.dds" (not found)
+
+[Fri Dec 22 21:42:07 2023]00001:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-MoonRise.dds" (not found)
+
+[Fri Dec 22 21:45:46 2023]00002:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunDown.dds" (not found)
+
+[Fri Dec 22 22:20:41 2023]00000:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunRise.dds" (not found)
+
+[Fri Dec 22 22:53:29 2023]00001:ResourceManager::CreateTexture(): unable to load "resources\sky\Satellite-ClearSunSet.dds" (not found)
+

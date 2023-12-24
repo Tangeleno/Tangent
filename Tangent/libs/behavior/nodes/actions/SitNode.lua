@@ -2,37 +2,47 @@ local mq = require "libs.Helpers.MacroQuestHelpers"
 local NodeState = require "libs.behavior.NodeState"
 local Node = require "libs.behavior.nodes.node"
 
+---@class SitNodeArgs : NodeArgs
+---@field name string @Name of the SitAction node.
+---@field maxSitAttempts number @The number of attempts that should be made before returning failure.
+
 ---@class SitNode
+---@field sitStarted boolean @Flag indicating if the sit action has started.
+---@field sitTimer number @Timer to track the duration since the sit action started.
+---@field sitAttempts number @The number of attempts made to sit.
 local SitNode = {}
 
 --- Constructor for Sit.
----@param args table @Table containing the arguments for the node.
----   - name: string @Name of the SitAction node.
----   - maxSitAttempts: number @The number of attempts that should be made before returning failure.
+---@param args SitNodeArgs @Table containing the arguments for the node.
 ---@return SitNode @The created Sit instance
 function SitNode.new(args)
     ---@class SitNode:Node
     local self = Node.new(args.name)
-    args.maxSitAttempts = 10
     self.NodeType = "Sit"
     self.sitStarted = false
     self.sitTimer = 0
     self.sitAttempts = 0
+    local maxSitAttempts = args.maxSitAttempts or 10
+
+    mq.Write.Trace("%s: Creating SitNode with max attempts: %d", self.Name, maxSitAttempts)
 
     function self._OnInitialize(blackboard)
+        mq.Write.Debug("%s: Initializing SitNode", self.Name)
         self.sitStarted = false
         self.sitTimer = 0
         self.sitAttempts = 0
     end
 
     function self._Update(blackboard)
+
         if mq.TLO.Me.Sitting() then
             return NodeState.Success
         elseif mq.TLO.Me.Standing() then
-            if self.sitAttempts >= args.maxSitAttempts then
+            if self.sitAttempts >= maxSitAttempts then
+                mq.Write.Warn("%s: Exceeded max sit attempts", self.Name)
                 return NodeState.Failure
             end
-            if self.sitStarted and self.sitTimer <= 500 then
+            if self.sitStarted and self.sitTimer < 500 then
                 self.sitTimer = self.sitTimer + blackboard.deltaTime
                 return NodeState.Running
             else
@@ -43,6 +53,7 @@ function SitNode.new(args)
                 return NodeState.Running
             end
         end
+        mq.Write.Warn("%s: Unable to sit - neither sitting nor standing detected", self.Name)
         return NodeState.Failure
     end
 

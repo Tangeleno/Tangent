@@ -1,0 +1,8 @@
+UIErrorLog created at Fri Dec 22 23:12:12 2023
+[Fri Dec 22 23:12:12 2023] Warning: file EQLSUI.xml not found in directory UIFiles\default\.  Attempting to use file from Default skin.
+[Fri Dec 22 23:12:12 2023] Couldn't open or read UIFiles\default\EQLSUI.xml
+[Fri Dec 22 23:12:12 2023] Error reading XML.
+[Fri Dec 22 23:12:12 2023] Error loading skin: loading default skin instead.
+[Fri Dec 22 23:12:12 2023] Warning: file EQLSUI.xml not found in directory UIFiles\default\.  Attempting to use file from Default skin.
+[Fri Dec 22 23:12:12 2023] Couldn't open or read UIFiles\default\EQLSUI.xml
+[Fri Dec 22 23:12:12 2023] Error reading XML.
