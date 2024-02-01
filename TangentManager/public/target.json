@@ -1,0 +1,13 @@
+﻿{
+  "name": "Root Node",
+  "type": "SequenceNode",
+  "children": [
+    {
+      "name": "TargetInverter",
+      "type": "InvertNode",
+      "children": [{ "name": "Have Target", "type": "ConditionNode", "conditionName": "haveCorrectTarget", "paramKeys": ["targetId"] }]
+    },
+    { "name": "Target Is Valid", "type": "ConditionNode", "conditionName": "isValidTarget", "paramKeys": ["targetId", "spawnType"] },
+    { "name": "Target", "type": "ActionNode", "actionName": "target", "paramKeys": ["targetId", "spawnType"] }
+  ]
+}

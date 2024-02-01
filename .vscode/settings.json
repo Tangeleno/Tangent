@@ -1,0 +1,7 @@
+{
+    "mq-defs.etag": "W/\"84f1e2a4db4cf5112e8ccab4bff85052139891b066b224421c8e1c5ff9abc118\"",
+    "Lua.diagnostics.globals": [
+        "setup",
+        "teardown"
+    ]
+}

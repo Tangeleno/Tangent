@@ -1,0 +1,26 @@
+{
+    "name": "My Lua Dev Container",
+    "image": "tangent-test",  // The name of your Docker image
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"donjayamanne.githistory",
+				"xabikos.javascriptsnippets",
+				"sumneko.lua",
+				"actboy168.lua-debug",
+				"esbenp.prettier-vscode",
+				"vue.vscode-typescript-vue-plugin",
+				"vue.volar",
+				"sdras.vue-vscode-snippets",
+				"zenithcodeforge.mq-defs"
+			]
+		}
+	},
+	"appPort": "5173:5173",
+	"mounts": [
+        "source=${localEnv:USERPROFILE}/.ssh/id_ed25519,target=/root/.ssh/id_ed25519,type=bind",
+		"source=${localEnv:USERPROFILE}/source/repos/mq-definitions,target=/root/workspaces/mq-definitions,type=bind"
+    ],
+	"runArgs": ["--network=host"]
+    // You can add other configuration settings as needed
+}

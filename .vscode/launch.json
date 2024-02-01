@@ -1,0 +1,49 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "arg": [],
+      "name": "Run Test.lua",
+      "program": "${workspaceFolder}/tangent/test.lua",
+      "request": "launch",
+      "stopOnEntry": false,
+      "type": "lua",
+      "path": "${workspaceFolder}/tangent/?.lua",
+      "cwd": "${workspaceFolder}/tangent"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Program",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}/TangentManager"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome against localhost",
+      "url": "https://localhost:5173",
+      "webRoot": "${workspaceFolder}/TangentManager",
+      "userDataDir": false, // This tells VS Code to use an existing profile
+      "runtimeArgs": [
+        "--profile-directory=Default" // Replace with your profile name
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Node.js + Chrome",
+      "configurations": [
+        "Launch Program",
+        "Launch Chrome against localhost"
+      ]
+    }
+  ]
+}
